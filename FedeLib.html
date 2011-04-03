@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #52442b; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2a3c91}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4b442e}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4b442e; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519; min-height: 12.0px}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #783a1d}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {text-decoration: underline}
+span.s3 {color: #0013bb}
+span.s4 {color: #000000}
+span.s5 {color: #5a6628}
+span.s6 {color: #0b2aab}
+span.s7 {color: #a8220e}
+span.s8 {color: #606060}
+span.s9 {color: #62603d}
+span.s10 {font: 12.0px Helvetica}
+span.s11 {color: #0021b3}
+span.s12 {color: #853519}
+span.s13 {color: #001bb7}
+span.s14 {color: #0626af}
+span.s15 {color: #783a1d}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>FedeLib<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>Library of Fede's Classes</b></p>
+<p class="p2">by Federico Reuben</p>
+<p class="p3"><br></p>
+<p class="p4"><b><span class="s2">Spectral Tracking:</span></b></p>
+<p class="p5"><br></p>
+<p class="p2"><b>PartialTracker( windowSize,<span class="Apple-converted-space">  </span>numberPartials,<span class="Apple-converted-space">  </span>fftbuffer, magbuffer,<span class="Apple-converted-space">  </span>freqbuffer)</b></p>
+<p class="p3"><br></p>
+<p class="p2">Uses Josh's PV_MagBuffer and PV_FreqBuffer to get FFT information of an audio input into an Array. You can specify the amount of partials you want from maximum to minimum.</p>
+<p class="p3"><br></p>
+<p class="p2">an example:</p>
+<p class="p6"><br></p>
+<p class="p7">p = <span class="s3">PartialTracker</span>(512, 5, 1, 2, 3);<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s4">p.startsynth(1); </span>//use AudioIn input - channel 1</p>
+<p class="p7">p.getarrays;</p>
+<p class="p8"><span class="s4">p.frequencies; </span>//get array with frequencies</p>
+<p class="p8"><span class="s4">p.magnitudes; </span>//get array with magnitudes</p>
+<p class="p6"><br></p>
+<p class="p9"><br></p>
+<p class="p2"><b>FFTFilter( windowSize,<span class="Apple-converted-space">  </span>numberPartials,<span class="Apple-converted-space">  </span>fftbuffer, magbuffer,<span class="Apple-converted-space">  </span>freqbuffer)</b></p>
+<p class="p2">Bandpass filter that takes FFT info from vocal input (1) to shape a sound from the input of a buffer or live input (5).</p>
+<p class="p6"><br></p>
+<p class="p10"><span class="s4">s.sendMsg(</span><span class="s5">\b_allocRead</span><span class="s4">, 3, </span>"sounds/a11wlk01.wav"<span class="s4">);</span></p>
+<p class="p6"><br></p>
+<p class="p7">p = <span class="s6">FFTFilter</span>(256, 255, 0, 1, 2);<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s4">p.startsynth3buf(1,0,2.0,3); </span>//vocalIn, out, volume, soundbuffer</p>
+<p class="p6"><br></p>
+<p class="p7">p.getarrays;</p>
+<p class="p7">p.thresh(2.4);</p>
+<p class="p7">p.getQu;</p>
+<p class="p6"><br></p>
+<p class="p7">p.volume(2.0);</p>
+<p class="p6"><br></p>
+<p class="p7">p.stoptask;</p>
+<p class="p7">p.resume;</p>
+<p class="p6"><br></p>
+<p class="p2"><b>SpearToSC( pathName )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Takes SPEAR (by Michael Klingbeil) text files saved in export format as paritals - and stores them into a SuperCollider Array.</p>
+<p class="p6"><br></p>
+<p class="p10"><span class="s4">a = </span><span class="s3">SpearToSC</span><span class="s4">(</span>"/Users/freuben/Music/E-tudes/Analized Stuff/Recorder/prueba.txt"<span class="s4">); </span><span class="s7">//your own path</span></p>
+<p class="p8"><span class="s4">a.getData </span>//this might take some time, wait until it says "done"</p>
+<p class="p8"><span class="s4">g = a.dataArray; </span>//all partials in multidimentional array</p>
+<p class="p7">g.dopostln; <span class="s7">//post them</span></p>
+<p class="p8"><span class="s4">g.size </span>//amount of partials</p>
+<p class="p6"><br></p>
+<p class="p8"><span class="s4">g[0].postln; </span>//get first partial</p>
+<p class="p7">g[0].flop[0] <span class="s7">//times</span></p>
+<p class="p7">g[0].flop[1] <span class="s7">//frequencies</span></p>
+<p class="p7">g[0].flop[2] <span class="s7">//amplitudes</span></p>
+<p class="p11"><br></p>
+<p class="p2"><b>SpearToMIDI( pathName )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Takes SPEAR (by Michael Klingbeil) text files - paritals - and reduces data to write a MIDI File with selected information. You can specify if you want note or gliss notation and track division in semitones.</p>
+<p class="p6"><br></p>
+<p class="p10"><span class="s4">a = </span><span class="s3">SpearToMIDI</span><span class="s4">(</span>"/Users/freuben/Documents/SuperCollider/Fede's/Aleks/other/radiohead.txt"<span class="s4">) </span><span class="s7">//your own path</span></p>
+<p class="p8"><span class="s4">a.getData </span>//this might take some time, wait until it says "done"</p>
+<p class="p6"><br></p>
+<p class="p8"><span class="s4">a.dataArray.size </span>//number of partials</p>
+<p class="p6"><br></p>
+<p class="p8">//reduces data to notes notation</p>
+<p class="p8"><span class="s4">a.getDataNote(1.0, 0.1); </span>//this might take some time, wait until it says "done". arguments are: Midi modulation and amplitude threshold</p>
+<p class="p6"><br></p>
+<p class="p7">a.dataNote.size;</p>
+<p class="p6"><br></p>
+<p class="p8"><span class="s4">a.midiFileNote(</span><span class="s8">"~/Desktop/radiohead.mid"</span><span class="s4">, 120, </span><span class="s8">"4/4"</span><span class="s4">, 6, 0); </span>//creates midi file, this takes some time. arguments are: pathName for new midiFile, tempo, time signature, track division in semitones, filternotes out of range (if arg == 1)</p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">Real-Time Scoring:</span></b></p>
+<p class="p5"><br></p>
+<p class="p2"><b>AlgorithnicScore( size )</b></p>
+<p class="p3"><br></p>
+<p class="p2">A class for scoring music in real-time:</p>
+<p class="p3"><br></p>
+<p class="p12"><span class="s4">a = </span>AlgorithmicScore<span class="s4">(1.2);</span></p>
+<p class="p6"><br></p>
+<p class="p13"><span class="s4">a.score([</span><span class="s9">\piano</span><span class="s4">], 1.0, 1, 1.3); </span>//clefArray, zoom, down, staffGap, spacing</p>
+<p class="p14"><br></p>
+<p class="p7">(</p>
+<p class="p7">~notes = (60,61..76);</p>
+<p class="p7">~pos = (0,1..16);</p>
+<p class="p7">a.notes(~notes, ~pos);</p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p7">a.notes(~notes-7, ~pos);</p>
+<p class="p6"><br></p>
+<p class="p7">a.close;</p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">TimeRelated:</span></b></p>
+<p class="p5"><br></p>
+<p class="p2"><b>StopWatch(speed)</b></p>
+<p class="p3"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>speed</b> - stop watch speed in seconds.</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span>t = <span class="s11">StopWatch</span>(0.001);</p>
+<p class="p6"><br></p>
+<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>t.getTime; </span>//get's time, try it several times</p>
+<p class="p6"><br></p>
+<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>t.reset; </span>//takes the stopwatch back to cero</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.getTime; <span class="s12">//try again</span></p>
+<p class="p6"><br></p>
+<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span>t.stop </span>//stop it</p>
+<p class="p16"><br></p>
+<p class="p16"><br></p>
+<p class="p2"><b>Chronometer</b></p>
+<p class="p3"><br></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span>*new(time) </b>- counts backwards from given time.</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>*start </b>- starts coundting from cero.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><b>TimeDif(func)</b></p>
+<p class="p3"><br></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span>func</b> - function with argument that is equal to the difference in time from last time that value message was executed.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s10"><b><span class="Apple-tab-span">	</span></b></span>t = <span class="s13">TimeDif</span>( {<span class="s13">|time|</span><span class="s8">"the time difference is: "</span>.post; time.postln;});</p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.value;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.value({<span class="s13">|time|</span> <span class="s8">"the difference in time is: "</span>.post; time.postln; });</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.value({<span class="s13">|time|</span> <span class="s8">"diff "</span>.postln; time.postln; });</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">Recording:</span></b></p>
+<p class="p3"><br></p>
+<p class="p2">A class to record to a file with a given path:</p>
+<p class="p3"><br></p>
+<p class="p2"><b>RecordToFile(pathName, numChannels,sampleFormat)</b></p>
+<p class="p3"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>pathName</b> - the path you want your file to be saved.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>numChannels</b> - number of channels you want to record in the File. <span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>sampleFormat</b> <span class="Apple-converted-space">  </span>- the sample format of you file:</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>16 integer: "int16"</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>24 integer:<span class="Apple-converted-space">  </span>"int24"</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>etc...</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s4"><span class="Apple-tab-span">	</span>r = </span><span class="s14">RecordToFile</span><span class="s4">(</span>"sounds/test.aif"<span class="s4">, 1, </span>"int24"<span class="s4">);</span></p>
+<p class="p6"><br></p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span>r.startRec; </span>//start recording</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>a = {<span class="s14">SinOsc</span>.ar(400, 0, 0.1)}.play(s) <span class="s15">//something to record</span></p>
+<p class="p6"><br></p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span>r.stopRec; </span>//stop recording</p>
+<p class="p3"><br></p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">Mapping:</span></b></p>
+<p class="p3"><br></p>
+<p class="p2">A class that prints values (values can be scaled) of the mouse possition when buttom is pressed:</p>
+<p class="p6"><br></p>
+<p class="p2"><b>MouseMap(minvalX, maxvalX, warpX, minvalY, maxvalY, warpY)</b></p>
+<p class="p6"><br></p>
+<p class="p7">s.boot;</p>
+<p class="p7">m = <span class="s11">MouseMap</span>(0,100,0, 0, 100, 0);</p>
+<p class="p7">m.start;</p>
+<p class="p6"><br></p>
+<p class="p7">m.stop;</p>
+</body>
+</html>

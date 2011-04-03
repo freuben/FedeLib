@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.54">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5f4125}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #0013bb}
+span.s4 {color: #606060}
+span.s5 {color: #0000bf}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>VoiceLeading<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a class for simple voice leading</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>VoiceLeading(startPitches, ranges, pivot)</b></p>
+<p class="p4"><br></p>
+<p class="p3">This is a class for very simple voice leading. It recives an array of notes as an input and outputs a result after voice leading. Each voice has a range and pivot points where notes change direction. <span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3"><b>startPitches</b> - start position of pitches</p>
+<p class="p3"><b>ranges</b> - ranges for each voice</p>
+<p class="p3"><b>pivot</b> - pivots to set limits</p>
+<p class="p4"><br></p>
+<p class="p3">It is also possible to change the interval for displacements and the step limit.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>Example</b></p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s2">0.midiin; </span>//turns all midi sources on once</p>
+<p class="p7"><br></p>
+<p class="p6"><span class="s2">h = 0.midiout(0); </span>//destination at 1, port at 0</p>
+<p class="p8">h.noteOn(0,100,100);</p>
+<p class="p8">h.noteOff(0,100,0);</p>
+<p class="p7"><br></p>
+<p class="p9">//four part writting</p>
+<p class="p7"><br></p>
+<p class="p8">v = <span class="s3">VoiceLeading</span>([<span class="s4">"c3"</span>, <span class="s4">"c4"</span>, <span class="s4">"g4"</span>, <span class="s4">"c5"</span>].notemidi);</p>
+<p class="p7"><br></p>
+<p class="p8">v.oldPitches;</p>
+<p class="p8">v.ranges;</p>
+<p class="p8">v.pivot;</p>
+<p class="p7"><br></p>
+<p class="p8">10.do{v.voices(<span class="s3">Array</span>.fill(4, {rrand(10,127)})).postln;}</p>
+<p class="p7"><br></p>
+<p class="p10">t = {<span class="s5">var</span> chord;</p>
+<p class="p10"><span class="s5">inf</span>.do({</p>
+<p class="p10">chord = v.voices(<span class="s5">Array</span>.fill(4, {rrand(10,127)})).postln;</p>
+<p class="p10">h.midiPbind(0,chord,<span class="s5">Pseq</span>([60],1),<span class="s5">Pseq</span>([1],1),<span class="s5">Pseq</span>([1],1));</p>
+<p class="p10">1.0.wait;</p>
+<p class="p10">});</p>
+<p class="p10">}.fork;</p>
+<p class="p11"><br></p>
+<p class="p10">t.stop;</p>
+<p class="p11"><br></p>
+<p class="p12">//more voices</p>
+<p class="p10">(</p>
+<p class="p10">~size = 12;</p>
+<p class="p10">~low = 40;</p>
+<p class="p10">~high = 100;</p>
+<p class="p10">~range = 10;</p>
+<p class="p5"><br></p>
+<p class="p10">~startPitches = <span class="s5">Array</span>.fill(~size, {rrand(~low, ~high)}).sort.reverse;</p>
+<p class="p5"><br></p>
+<p class="p10">~highRange = <span class="s5">Array</span>.interpolation(~size, ~low+~range, ~high).round(1).reverse;</p>
+<p class="p5"><br></p>
+<p class="p10">~ranges = [];</p>
+<p class="p5"><br></p>
+<p class="p10">~highRange.do({<span class="s5">|item, index|</span> ~ranges = ~ranges.add([item, item-~range]) });</p>
+<p class="p5"><br></p>
+<p class="p10">~pivots = <span class="s5">Array</span>.interpolation((~size-1), ~ranges[~ranges.size-1][1], ~ranges[0][1]).round(1);</p>
+<p class="p10">)</p>
+<p class="p5"><br></p>
+<p class="p10">v = <span class="s5">VoiceLeading</span>(~startPitches, ~ranges, ~pivots);</p>
+<p class="p5"><br></p>
+<p class="p10">v.voices(<span class="s5">Array</span>.fill(~size, {rrand(10,127)}));</p>
+<p class="p5"><br></p>
+<p class="p8">t = {<span class="s5">var</span> chord;</p>
+<p class="p8"><span class="s5">inf</span>.do({</p>
+<p class="p8">chord = v.voices(<span class="s5">Array</span>.fill(~size, {rrand(10,127)})).postln;</p>
+<p class="p8">h.midiPbind(0,chord,<span class="s5">Pseq</span>([40],1),<span class="s5">Pseq</span>([2],1),<span class="s5">Pseq</span>([1],1));</p>
+<p class="p8">2.wait;</p>
+<p class="p8">});</p>
+<p class="p8">}.fork;</p>
+<p class="p5"><br></p>
+<p class="p10">t.stop;</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p8">v.voices(<span class="s5">Array</span>.fill(~size, {rrand(10,127.0)}));</p>
+</body>
+</html>

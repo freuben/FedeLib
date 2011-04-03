@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #0021b3}
+span.s4 {color: #853519}
+span.s5 {color: #0000bf}
+span.s6 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>RecordToFile<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>record audio into a File</b></p>
+<p class="p2">by Federico Reuben</p>
+<p class="p3"><br></p>
+<p class="p2">A simple way to record into an audio file.</p>
+<p class="p3"><br></p>
+<p class="p2"><b>RecordToFile(pathName, numChannels,sampleFormat)</b></p>
+<p class="p3"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>pathName</b> - the path you want your file to be saved.</p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>numChannels</b> - number of channels you want to record in the File. <span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><b>sampleFormat</b> <span class="Apple-converted-space">  </span>- the sample format of you file:</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>16 integer: "int16"</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>24 integer:<span class="Apple-converted-space">  </span>"int24"</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>etc...</p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4">s.boot;</p>
+<p class="p5"><br></p>
+<p class="p6"><span class="s2">r = </span><span class="s3">RecordToFile</span><span class="s2">(</span>"sounds/test.aif"<span class="s2">, 1, </span>"int24"<span class="s2">);</span></p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s2">r.startRec; </span>//start recording</p>
+<p class="p5"><br></p>
+<p class="p4">a = {<span class="s3">SinOsc</span>.ar(400, 0, 0.1)}.play(s) <span class="s4">//something to record</span></p>
+<p class="p8"><br></p>
+<p class="p4">a.free;</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s2">r.stopRec; </span>//stop recording</p>
+<p class="p5"><br></p>
+<p class="p9"><br></p>
+<p class="p10"><span class="s2">r = </span><span class="s5">RecordToFile</span><span class="s2">.save(2, </span><span class="s6">"int16"</span><span class="s2">); </span>//opens a save window</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s2">r.startRec; </span>//start recording</p>
+<p class="p5"><br></p>
+<p class="p4">a = {<span class="s3">Saw</span>.ar(400, 0.1)}.play(s) <span class="s4">//something to record</span></p>
+<p class="p5"><br></p>
+<p class="p4">a.free;</p>
+<p class="p5"><br></p>
+<p class="p4">r.stopRec; <span class="s4">//stop re</span></p>
+<p class="p9"><br></p>
+<p class="p10"><span class="s2">r.pathName </span>//if you forget where you saved it</p>
+</body>
+</html>

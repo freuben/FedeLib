@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.54">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952e14}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952e14; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {font: 13.0px Helvetica}
+span.s2 {color: #001bb7}
+span.s3 {color: #000000}
+span.s4 {color: #436c19}
+span.s5 {color: #606060}
+span.s6 {color: #952e14}
+span.s7 {color: #0013bb}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Counter<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><span class="s1"><b>a counter</b></span></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Counter.ar(highLimit, lowLimit, whichDir)</b></p>
+<p class="p4"><br></p>
+<p class="p3">This should say what the class does and how great it is.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p3"><b>highLimit</b> - sets higher limit</p>
+<p class="p3"><b>lowLimit</b> - sets lower limit</p>
+<p class="p3"><b>whichDir</b> - set which direction to count</p>
+<p class="p4"><br></p>
+<p class="p3">A simple counter.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>Example</b></p>
+<p class="p5"><br></p>
+<p class="p6">c = <span class="s2">Counter</span>(10);</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">c.step; </span>//counts each time evaluated</p>
+<p class="p5"><br></p>
+<p class="p7">//set high and low limits:</p>
+<p class="p6">c.highLimit = 15;<span class="Apple-converted-space"> </span></p>
+<p class="p6">c.lowLimit = -4;</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">c.direction(</span><span class="s4">\down</span><span class="s3">); </span>//counts backwards</p>
+<p class="p5"><br></p>
+<p class="p6">c.step;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">c.direction(</span><span class="s4">\up</span><span class="s3">); </span>//back to normal</p>
+<p class="p5"><br></p>
+<p class="p6">c.step;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">c.function = {</span><span class="s5">"bang"</span><span class="s3">.postln}; </span>//evaluate this function everytime the counter reaches the high limit</p>
+<p class="p5"><br></p>
+<p class="p6">c.highLimit = 10;<span class="Apple-converted-space"> </span></p>
+<p class="p6">c.lowLimit = 0;</p>
+<p class="p5"><br></p>
+<p class="p6">c.count = 10;</p>
+<p class="p5"><br></p>
+<p class="p6">{<span class="s2">inf</span>.do{c.step.postln; 0.3.yield}}.fork; <span class="s6">//evaluate in a routine</span></p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">c.direction(</span><span class="s4">\upDown</span><span class="s3">); </span>//counts up and down</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">c.whichDir; </span>//tells you which direction mode</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s3">c.carry; </span>//count loops</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p9">//multiple Counters:</p>
+<p class="p5"><br></p>
+<p class="p10">//defaul argument for highLimit is inf</p>
+<p class="p9"><span class="s3">~array = </span><span class="s7">Counter</span><span class="s3">.new!10; </span>//an array of 10 counters</p>
+<p class="p9"><span class="s3">~count = </span><span class="s7">Counter</span><span class="s3">(~array.size-1);</span>//a counter to get indexes</p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6">{<span class="s7">inf</span>.do{</p>
+<p class="p6"><span class="s7">var</span> countArr;</p>
+<p class="p6">~array.do({<span class="s7">|item|</span> countArr = countArr.add(item.count)});</p>
+<p class="p6">countArr.postln;</p>
+<p class="p6">~array[~count.step].step;</p>
+<p class="p6">0.05.yield;</p>
+<p class="p6">}}.fork;</p>
+<p class="p6">)</p>
+<p class="p8"><br></p>
+</body>
+</html>

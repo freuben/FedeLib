@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.54">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952e14}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952e14; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #0021b3}
+span.s4 {color: #952e14}
+span.s5 {color: #853519}
+span.s6 {color: #606060}
+span.s7 {color: #4e6a1f}
+span.s8 {color: #0013bb}
+span.s9 {color: #316f11}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>SpearToSC<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>SPEAR text files - partials - to SC Array</b></p>
+<p class="p2">by Federico Reuben</p>
+<p class="p3"><br></p>
+<p class="p2"><b>SpearToSC( pathName )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Takes SPEAR (by Michael Klingbeil) text files - paritals - and stores them into a SuperCollider Array.</p>
+<p class="p2">an example:</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s2">a = </span><span class="s3">SpearToSC</span><span class="s2">(</span>"/Users/freuben/Music/E-tudes/Analized Stuff/Recorder/prueba.txt"<span class="s2">)</span> <span class="s4">//this might take some time</span></p>
+<p class="p6"><span class="s2">g = a.dataArray; </span>//all partials in multidimentional array</p>
+<p class="p7">g.dopostln; <span class="s5">//post them</span></p>
+<p class="p6"><span class="s2">g.size </span>//amount of partials</p>
+<p class="p4"><br></p>
+<p class="p6">//get first partial</p>
+<p class="p7">g[0].dopostln;</p>
+<p class="p7">g[0].flop[0] <span class="s5">//times</span></p>
+<p class="p7">g[0].flop[1] <span class="s5">//frequencies</span></p>
+<p class="p7">g[0].flop[2] <span class="s5">//amplitudes</span></p>
+<p class="p4"><br></p>
+<p class="p7">g[0].flop[1].minItem <span class="s5">//min frequency</span></p>
+<p class="p7">g[0].flop[1].maxItem <span class="s5">//max frequency</span></p>
+<p class="p6"><span class="s2">g[0].flop[1].mean </span>//average frequency</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">g[1].dopostln; </span>//get second partial</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">g[1].flop[2].mean </span>//average amplitude</p>
+<p class="p4"><br></p>
+<p class="p7">g[g.size-1].dopostln; <span class="s5">//get last partial</span></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6">//re-synthesize using score - works with a limited amount of partials</p>
+<p class="p4"><br></p>
+<p class="p7">x = [];</p>
+<p class="p4"><br></p>
+<p class="p6">//this might take a while</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s3">Routine</span>({<span class="s3">var</span> parStep, step, node;</p>
+<p class="p7">parStep = 0;</p>
+<p class="p7">g.size.do({<span class="s3">var</span> times, freq, amp;</p>
+<p class="p7">times = g[parStep].flop[0];</p>
+<p class="p7">freq = g[parStep].flop[1];</p>
+<p class="p7">amp = g[parStep].flop[2];</p>
+<p class="p4"><br></p>
+<p class="p7">step = 1;</p>
+<p class="p7">node = 1000+parStep;</p>
+<p class="p7">x = x.addAll([[times[0], [<span class="s6">"/s_new"</span>, <span class="s6">"constSine"</span>, node, 0, 0, <span class="s6">"freq"</span>, freq[0], <span class="s6">"amp"</span>, amp[0]]]]);</p>
+<p class="p7"><span class="Apple-converted-space"> </span>(g[parStep].size-2).do({</p>
+<p class="p7">x = x.addAll([[times[step], [<span class="s6">"/n_set"</span>, node, <span class="s6">"freq"</span>, freq[step], <span class="s6">"amp"</span>, amp[step]]]]);</p>
+<p class="p7">0.001.yield;</p>
+<p class="p7">step = step + 1;</p>
+<p class="p7">});</p>
+<p class="p7">x = x.addAll([[times[g.[parStep].size-1], [<span class="s6">"/n_set"</span>, node, "freq", freq[g.[parStep].size-1], "amp", amp[g.[parStep].size-1], <span class="s6">"gates"</span>, 0]]]);</p>
+<p class="p7"><span class="s7">'partial '</span>.post; (parStep+1).postln;</p>
+<p class="p7">0.001.yield;</p>
+<p class="p7">parStep = parStep + 1;</p>
+<p class="p7">});</p>
+<p class="p7"><span class="s6">"done"</span>.postln;</p>
+<p class="p7">}).play</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p7">x.dopostln</p>
+<p class="p4"><br></p>
+<p class="p7">s.boot;</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s3">SynthDef</span>(<span class="s7">\constSine</span>, { <span class="s3">arg</span> out=0, freq = 360, vol = 1, amp=0.1, gates=1, dec = 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> signal, env;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.asr(0.1, 1.0, dec,-3.0), gates, doneAction:2);<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>signal = <span class="s3">SinOsc</span>.ar(freq, 0, amp);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, signal*vol);</p>
+<p class="p7">}).send(s);</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">z = <span class="s3">Score</span>.new;</p>
+<p class="p7">z.score = x;</p>
+<p class="p7">z.sort;</p>
+<p class="p7">z.postcs</p>
+<p class="p4"><br></p>
+<p class="p7">z.play;</p>
+<p class="p7">z.stop;</p>
+<p class="p4"><br></p>
+<p class="p8">//averege partials</p>
+<p class="p9"><br></p>
+<p class="p4"><br></p>
+<p class="p7">x = [];</p>
+<p class="p10"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s3">Routine</span>({<span class="s3">var</span> parStep, step, node;</p>
+<p class="p7">parStep = 0;</p>
+<p class="p7">g.size.do({<span class="s3">var</span> times, freq, amp;</p>
+<p class="p7">times = g[parStep].flop[0];</p>
+<p class="p7">freq = g[parStep].flop[1].mean;</p>
+<p class="p7">amp = g[parStep].flop[2].mean;</p>
+<p class="p4"><br></p>
+<p class="p7">step = 1;</p>
+<p class="p7">node = 1000+parStep;</p>
+<p class="p7">x = x.addAll([[times[0], [<span class="s6">"/s_new"</span>, <span class="s6">"constSine"</span>, node, 0, 0, <span class="s6">"freq"</span>, freq, <span class="s6">"amp"</span>, amp/2]]]);</p>
+<p class="p7">x = x.addAll([[times[g.[parStep].size-1], [<span class="s6">"/n_set"</span>, node, <span class="s6">"gates"</span>, 0]]]);</p>
+<p class="p7"><span class="s7">'partial '</span>.post; (parStep+1).postln;</p>
+<p class="p7">0.001.yield;</p>
+<p class="p7">parStep = parStep + 1;</p>
+<p class="p7">});</p>
+<p class="p7"><span class="s6">"done"</span>.postln;</p>
+<p class="p7">}).play</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p7">z = <span class="s3">Score</span>.new;</p>
+<p class="p7">z.score = x;</p>
+<p class="p7">z.sort;</p>
+<p class="p4"><br></p>
+<p class="p7">z.play;</p>
+<p class="p7">z.stop;</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p11">//write <span class="s4">averege partials</span> to a midi using SimpleMIDIFile</p>
+<p class="p4"><br></p>
+<p class="p7">(</p>
+<p class="p11"><span class="s2">m = </span><span class="s8">SimpleMIDIFile</span><span class="s2">( </span><span class="s6">"~/Desktop/midifiletest.mid"</span><span class="s2"> ); </span>// create empty file in your Desktop</p>
+<p class="p4"><br></p>
+<p class="p11"><span class="s2">~numTracks = 6; </span>//number of tracks in midi file</p>
+<p class="p4"><br></p>
+<p class="p7">m.init1(~numTracks, 120, <span class="s6">"4/4"</span> );<span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p7">m.timeMode = <span class="s9">\seconds</span>;</p>
+<p class="p4"><br></p>
+<p class="p7">x = [];</p>
+<p class="p4"><br></p>
+<p class="p11"><span class="s8">Routine</span><span class="s2">({</span><span class="s8">var</span><span class="s2"> parStep, step; </span>//Routine to get maximun amplitude</p>
+<p class="p7">parStep = 0;</p>
+<p class="p7">g.size.do({<span class="s8">var</span> amp;</p>
+<p class="p7">amp = g[parStep].flop[2];</p>
+<p class="p7">x = x.addAll(amp.mean);</p>
+<p class="p7">0.001.yield;</p>
+<p class="p7">parStep = parStep + 1;</p>
+<p class="p7">});</p>
+<p class="p7"><span class="s6">"done"</span>.postln;</p>
+<p class="p7">}).play</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p11">//Routine to convert data to midi file format</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s8">Routine</span>({<span class="s8">var</span> parStep, step;</p>
+<p class="p7">parStep = 0;</p>
+<p class="p7">step = 0;</p>
+<p class="p7">g.size.do({<span class="s8">var</span> start, dur, note, vel;</p>
+<p class="p7">start = g[parStep].flop[0].minItem;</p>
+<p class="p7">dur = g[parStep].flop[0].maxItem - start;</p>
+<p class="p7">note = g[parStep].flop[1].mean.cpsmidi.round(1);</p>
+<p class="p7">vel = g[parStep].flop[2].mean.linlin(0,x.maxItem,0,127).round(1);</p>
+<p class="p4"><br></p>
+<p class="p7">m.addNote(note, vel, start, dur, 127,<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>channel: step,<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>track: step);</p>
+<p class="p7">0.001.yield;</p>
+<p class="p7">parStep = parStep + 1;</p>
+<p class="p7">if(step &gt;= ~numTracks,</p>
+<p class="p7"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>{step = 0},<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>{step = step + 1}</p>
+<p class="p7">);</p>
+<p class="p7">});</p>
+<p class="p7">m.adjustEndOfTrack;</p>
+<p class="p7">m.tempoMap;<span class="Apple-converted-space"> </span></p>
+<p class="p7">m.timeSignatures;<span class="Apple-converted-space"> </span></p>
+<p class="p5">"number of partials: "<span class="s2">.post; g.size.postln;</span></p>
+<p class="p7"><span class="s6">"done"</span>.postln;</p>
+<p class="p7">}).play</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p11"><span class="s2">m.midiEvents.dopostln; </span>//look at midi information</p>
+<p class="p4"><br></p>
+<p class="p11"><span class="s2">m.write; </span>//write midi file</p>
+<p class="p4"><br></p>
+<p class="p7">m.plot; <span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+</body>
+</html>

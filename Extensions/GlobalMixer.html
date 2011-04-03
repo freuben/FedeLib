@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952e14}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952e14; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #853519; min-height: 12.0px}
+span.s1 {color: #000000}
+span.s2 {color: #0000bf}
+</style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2">s.boot;</p>
+<p class="p1"><br></p>
+<p class="p3">//in the server window press l to see levels</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s1">g = </span><span class="s2">GlobalMixer</span><span class="s1">.new; </span>//shows GUI for mixer</p>
+<p class="p1"><br></p>
+<p class="p5"><span class="s1">g.testMixer; </span>//sines in first 8 channels</p>
+<p class="p1"><br></p>
+<p class="p6">//Now move sliders to set individual volumes for each output in the server</p>
+<p class="p1"><br></p>
+<p class="p3">// Now press Cmd-.</p>
+<p class="p3">//the mixer resets itself (still unstable)</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s1">g.testMixer;<span class="Apple-converted-space">  </span></span>//sines again - volumes remain the same as the ones in the mixer</p>
+<p class="p7"><br></p>
+<p class="p3">//the class is unstable, probabilly because of the way I'm using Volume class</p>
+<p class="p3">//this class is still buggy and sometimes when sliders are moved a different output changes...<span class="Apple-converted-space"> </span></p>
+<p class="p3">//I don't know why!!! :(</p>
+<p class="p7"><br></p>
+<p class="p2">g.testMixer;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><br></p>
+<p class="p8"><span class="s1">g.remove; </span>//removes the mixer</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+</body>
+</html>

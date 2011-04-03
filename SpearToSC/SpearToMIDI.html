@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.54">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4f442c}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4f442c; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 4.0px Monaco; min-height: 5.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #783a1d}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0626af; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952e14}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #243897}
+span.s4 {color: #4f442c}
+span.s5 {color: #606060}
+span.s6 {color: #1530a3}
+span.s7 {color: #5f642f}
+span.s8 {color: #0626af}
+span.s9 {color: #556824}
+span.s10 {color: #001bb7}
+span.s11 {color: #952e14}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>SpearToMIDI<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>writes MIDI File from SPEAR text files - partials - <span class="Apple-converted-space"> </span></b></p>
+<p class="p2">by Federico Reuben</p>
+<p class="p3"><br></p>
+<p class="p2"><b>SpearToMIDI( pathName )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Takes SPEAR (by Michael Klingbeil) text files - paritals - and reduces data to write a MIDI File with selected information. You can specify if you want note or gliss notation and track division in semitones.</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s2">a = </span><span class="s3">SpearToMIDI</span><span class="s2">(</span>"/Users/freuben/Documents/SuperCollider/Fede's/Aleks/other/radiohead.txt"<span class="s2">)</span></p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">a.dataArray.size </span>//number of partials</p>
+<p class="p6"><span class="s2">a.partial(0) </span>//get first partial</p>
+<p class="p7">a.threshGroups(0.01); <span class="s4">//amplitude thresh</span></p>
+<p class="p7">a.threshMIDIMod(1.0); <span class="s4">//equal tempered</span></p>
+<p class="p4"><br></p>
+<p class="p6">//reduces data to notes notation</p>
+<p class="p6"><span class="s2">a.getDataNote(1.0, 0.1); </span>//this might take some time, wait until it says "done". arguments are: Midi modulation and amplitude threshold</p>
+<p class="p4"><br></p>
+<p class="p7">a.dataNote.dopost;<span class="Apple-converted-space"> </span></p>
+<p class="p7">a.dataNotePitch;</p>
+<p class="p7">a.dataNote.size;</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s2">a.midiFileNote(</span><span class="s5">"~/Desktop/radiohead.mid"</span><span class="s2">, 120, </span><span class="s5">"4/4"</span><span class="s2">, 6, 0); </span>//creates midi file, this takes some time. arguments are: pathName for new midiFile, tempo, time signature, track division in semitones, filternotes out of range (if arg == 1)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">a.m.plot </span>//plot the midifile;</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p6">//reduces data to gliss notation</p>
+<p class="p6"><span class="s2">a.getDataGliss(1.0, 0.1); </span>//this might take some time, wait until it says "done"</p>
+<p class="p7">a.dataGliss.dopost;<span class="Apple-converted-space"> </span></p>
+<p class="p7">a.dataGlissPitch;</p>
+<p class="p7">a.dataNote.size;</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">a.midiFileGliss(</span><span class="s5">"~/Desktop/radiohead2.mid"</span><span class="s2">, 120, </span><span class="s5">"4/4"</span><span class="s2">, 6, 0); </span>//creates midi file, this takes some time. arguments are: pathName for new midiFile, tempo, time signature, track division in semitones, filternotes out of range (if arg == 1)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s2">a.m.plot </span>//plot the midifile;</p>
+<p class="p8"><br></p>
+<p class="p6">//with a Synth</p>
+<p class="p4"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s6">SynthDef</span>(<span class="s7">\instr</span>, { <span class="s6">arg</span> out=0, freq=440, amp=0.1, pan=0, gates=1, atk=0.01, dec=0.2;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">var</span> z;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = <span class="s6">LPF</span>.ar(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Mix</span>.ar(<span class="s6">LFSaw</span>.ar(freq*[0.99,1,1.01],0.0,amp)),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">XLine</span>.kr(5000, 1000, 1.5))<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s6">EnvGen</span>.kr(<span class="s6">Env</span>.new([0,1,0],[0.01,0.2],<span class="s7">\lin</span>,1), gates, doneAction:2);<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out, <span class="s6">Pan2</span>.ar(z, pan));</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).load(s);<span class="Apple-converted-space"> </span></p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">x = <span class="s6">Synth</span>(<span class="s7">\instr</span>);</p>
+<p class="p7">x.set(<span class="s7">\gates</span>, 0)</p>
+<p class="p4"><br></p>
+<p class="p7">a.midiArrayNote;</p>
+<p class="p4"><br></p>
+<p class="p7">a.getOSCArray(<span class="s7">'instr'</span>, 0.1, 1.0, [<span class="s7">\pan</span>, {rrand(-1,1.0)}, <span class="s7">\atk</span>, {rrand(0.01,2.0)}, <span class="s7">\dec</span>, {rrand(0.01,2.0)}])</p>
+<p class="p4"><br></p>
+<p class="p7">a.adjustEnd(3.0);</p>
+<p class="p4"><br></p>
+<p class="p7"><span class="s6">Post</span> &lt;&lt; a.oscArray &lt;&lt; nl;</p>
+<p class="p4"><br></p>
+<p class="p7">g = a.oscArray;</p>
+<p class="p4"><br></p>
+<p class="p7">z = <span class="s6">Score</span>.new;</p>
+<p class="p7">z.score = g;</p>
+<p class="p7">z.sort;</p>
+<p class="p7">z.play;</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">a.getDataNote(1/8, 0.1);</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s6">Score</span><span class="s2">.write(g, </span>"osc/radiohead.osc"<span class="s2">); </span><span class="s4">//write to osc file</span></p>
+<p class="p5">"./scsynth -N osc/radiohead.osc _ recordings/radiohead.aiff 44100 AIFF int16 -o 1"<span class="s2">.unixCmd; </span><span class="s4">//render it</span></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p6">//////////////////////////////////////////////////////////////////////////</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p10"><span class="s2">a.getDataGliss(7.0, 0.0); </span>//this might take some time, wait until it says "done"</p>
+<p class="p7">g = a.dataGliss;</p>
+<p class="p4"><br></p>
+<p class="p7">~maxArr = a.maxSizeGliss;</p>
+<p class="p4"><br></p>
+<p class="p7">a.midiArrayGliss;</p>
+<p class="p4"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s8">SynthDef</span>(<span class="s5">"sineGlisses"</span>, {<span class="s8">arg</span> t_gate, out, gates=1, amp=0.1, pan=0, atk=0.1, rel=1.0;</p>
+<p class="p7"><span class="s8">var</span> envNew, envctl, envctlAmp, signal, env;</p>
+<p class="p10">// make an empty 4 segment envelope</p>
+<p class="p7">envNew = <span class="s8">Env</span>.newClear(~maxArr);</p>
+<p class="p10">//// create a control argument array</p>
+<p class="p7">envctl = <span class="s8">Control</span>.names([<span class="s9">\envFreq</span>]).kr( envNew.asArray );</p>
+<p class="p7">envctlAmp = <span class="s8">Control</span>.names([<span class="s9">\envAmp</span>]).kr( envNew.asArray );</p>
+<p class="p7">env = <span class="s8">EnvGen</span>.kr(<span class="s8">Env</span>.asr(atk, 1.0, rel), gates, doneAction: 2);</p>
+<p class="p7">signal = <span class="s8">SinOsc</span>.ar(<span class="s8">EnvGen</span>.kr(envctl, t_gate), 0, <span class="s8">EnvGen</span>.kr(envctlAmp, t_gate))*env;</p>
+<p class="p11"><br></p>
+<p class="p7"><span class="s8">Out</span>.ar(out, <span class="s8">Pan2</span>.ar(signal*amp, pan));</p>
+<p class="p7">}).load(s);</p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">a.getOSCArrayGliss(<span class="s5">"sineGlisses"</span>, adjVol: 1.0, extraArgs: [<span class="s9">\amp</span>, rrand(0.5, 0.9).postln*4, <span class="s9">\pan</span>, rrand(-0.2,0.2), <span class="s9">\atk</span>, {rrand(0.07,0.1)}, <span class="s9">\rel</span>, {rrand(0.2,1.0)}]);</p>
+<p class="p4"><br></p>
+<p class="p7">g = a.oscArray;</p>
+<p class="p4"><br></p>
+<p class="p7">g.size</p>
+<p class="p4"><br></p>
+<p class="p7">z = <span class="s8">Score</span>.new;</p>
+<p class="p4"><br></p>
+<p class="p7">z.score = g;</p>
+<p class="p4"><br></p>
+<p class="p7">z.sort;</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s2">~string =</span>"radiohead";</p>
+<p class="p12"><br></p>
+<p class="p7"><span class="s8">Score</span>.write(g.postln, <span class="s5">"osc/"</span> ++ ~string ++ <span class="s5">".osc"</span>);</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s2">(</span>"./scsynth -N osc/"<span class="s2"> ++ ~string ++ </span>".osc"<span class="s2"> ++ </span>" _ recordings/"<span class="s2"> ++ ~string ++ </span>".aiff 44100 AIFF int16 -o 2"<span class="s2">).unixCmd;</span></p>
+<p class="p4"><br></p>
+<p class="p13">////////////</p>
+<p class="p13">//get only lists</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s2">a = </span><span class="s10">SpearToMIDI</span><span class="s2">(</span>"/Users/freuben/Documents/SuperCollider/Fede's/Aleks/other/radiohead.txt"<span class="s2">) </span><span class="s11">//wait until its done</span></p>
+<p class="p4"><br></p>
+<p class="p13">//reduces data to notes notation</p>
+<p class="p13"><span class="s2">a.getDataNote(0.25, 0.1); </span>//this might take some time</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p7">a.findInfo(0); <span class="s11">//filter</span></p>
+<p class="p13"><span class="s2">a.infoArray.dopostln; </span>//[startTime, duration, midiNote, velocity]</p>
+<p class="p13"><span class="s2">a.infoArrayPar.postAll; </span>//returns with notes in array according to partials</p>
+<p class="p7">a.infoArrayPar[0] <span class="s11">//fist partial</span></p>
+<p class="p4"><br></p>
+<p class="p7">a.infoArray.do({|item| [item[2].pitchClass, item[2].midioctave].postln })</p>
+<p class="p4"><br></p>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.54">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6e3d20}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #564329}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {text-decoration: underline}
+span.s3 {color: #1e349d}
+span.s4 {color: #616235}
+span.s5 {color: #564329}
+span.s6 {color: #0b2aab}
+span.s7 {color: #5a6628}
+span.s8 {color: #6e3d20}
+span.s9 {color: #000000}
+span.s10 {color: #606060}
+span.s11 {color: #556824}
+span.s12 {color: #62603d}
+span.s13 {color: #2a3c91}
+span.s14 {font: 12.0px Helvetica}
+span.s15 {color: #0000bf}
+span.s16 {color: #007300}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>FedeExtensions<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>Library of extensions</b></p>
+<p class="p2">by Federico Reuben</p>
+<p class="p3"><br></p>
+<p class="p4"><b><span class="s2">SimpleNumber</span></b></p>
+<p class="p5"><br></p>
+<p class="p2"><b>time( func, wait)</b></p>
+<p class="p3"><br></p>
+<p class="p2">Takes simple number as number of times to perform a routine. Argument of function is the current SystemClock time. Wait is the amount of time to wait each time.</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s3">inf</span>.time({<span class="s3">arg</span> val; <span class="s4">'current time: '</span>.post; val.postln;}, {rrand(0.2,3.0)}) <span class="s5">//amount of times, function, wait</span></p>
+<p class="p6"><br></p>
+<p class="p7">3.time({<span class="s3">arg</span> val; <span class="s4">'current time: '</span>.post; val.postln;}, 1) <span class="s5">//amount of times, function, wait</span></p>
+<p class="p6"><br></p>
+<p class="p8">//time difference:</p>
+<p class="p7">1.time({<span class="s6">arg</span> val; <span class="s7">'current time: '</span>.post; ~oldTime = val.postln;}); <span class="s8">//set initial time</span></p>
+<p class="p7">1.time({<span class="s6">arg</span> val; <span class="s7">'current time: '</span>.post;<span class="Apple-converted-space">  </span>(val-~oldTime).postln; ~oldTime=val}); <span class="s8">//evaluate many times</span></p>
+<p class="p6"><br></p>
+<p class="p2"><b>line( end, time, step, func )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Performs a numeric line in SC language using Routine. Takes simple number as start of the line. Arguments are end of line, step and function. The function has as arugnment the numbers of line.</p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s9">line(0,127,5) </span>//start, end, time, step (default 1), function(default prints numbers)</p>
+<p class="p6"><br></p>
+<p class="p7">line(1,100, 2.5, 0.5, {<span class="s3">|val|</span> <span class="s4">'square root of value: '</span>.post; (val.sqrt).postln;}); <span class="s5">//start, end, time, step, function</span></p>
+<p class="p6"><br></p>
+<p class="p2"><b>scale ( type, numOctaves )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Returns array containing midi numbers for harmonic minor scale starting with simple number.</p>
+<p class="p3"><br></p>
+<p class="p7">60.scale(<span class="s4">\mayor</span>, 3).midinote <span class="s5">//type, num octaves</span></p>
+<p class="p7">69.scale(<span class="s4">\minor</span>, 2).midinote; <span class="s5">//returns harmonic minor</span></p>
+<p class="p7">69.scale(<span class="s4">\natMinor</span>, 1).midinote; <span class="s5">//natural minor</span></p>
+<p class="p6"><br></p>
+<p class="p2"><b>melMinorScale ( numOctaves )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Returns array containing midi numbers for harmonic minor scale starting with simple number.</p>
+<p class="p3"><br></p>
+<p class="p9"><span class="s9">69.melMinorScale.midinote; </span>//natural minor goes up as harmonic and down as natural</p>
+<p class="p7">60.melMinorScale(2).midinote;</p>
+<p class="p6"><br></p>
+<p class="p2"><b>midipyth( frequency )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Converts MIDI numbers to pythagorean tunning. Argument is frequency that the ratios are tunned to.</p>
+<p class="p3"><br></p>
+<p class="p7">60.midipyth(415);</p>
+<p class="p7">60.midipyth(440);</p>
+<p class="p7">69.midipyth(415);</p>
+<p class="p6"><br></p>
+<p class="p2"><b>midijust( frequency )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Converts MIDI numbers to pythagorean tunning. Argument is frequency that the ratios are tunned to.</p>
+<p class="p3"><br></p>
+<p class="p7">60.midijust(415);</p>
+<p class="p7">60.midijust(440);</p>
+<p class="p7">69.midijust(415);</p>
+<p class="p6"><br></p>
+<p class="p2"><b>midiMax ( limit )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Returns closest noteclass below a given limit.<span class="Apple-converted-space">   </span></p>
+<p class="p3"><br></p>
+<p class="p7"><span class="s10">"b7"</span>.notemidi.midiMax(<span class="s10">"a7"</span>.notemidi).midinote;</p>
+<p class="p3"><br></p>
+<p class="p2"><b>midiMin ( limit )</b></p>
+<p class="p6"><br></p>
+<p class="p2">Returns closest noteclass above a given limit.<span class="Apple-converted-space">   </span></p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s10">"b2"</span>.notemidi.midiMin(<span class="s10">"c3"</span>.notemidi).midinote;</p>
+<p class="p6"><br></p>
+<p class="p2"><b>midiin</b></p>
+<p class="p3"><br></p>
+<p class="p2">If simple number is 0, then it starts all MIDIIn sources. If it is 1, then it evalutes a routine that tracks when new midi equipment is connected and if that is the case, then it starts all the MIDIIn sources again. The routine doesn't turn off with cmd period. Returns the function with the routine inbeded so it's possible to access it if needed.</p>
+<p class="p3"><br></p>
+<p class="p9"><span class="s9">0.midiin; </span>//turns all midi sources on once</p>
+<p class="p9"><span class="s9">h = 1.midiin; </span>//routine that detects new midi equipment if connected</p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s3">CmdPeriod</span><span class="s9">.remove(h); </span>//now it is possible to stop routine by pressing cmd period</p>
+<p class="p6"><br></p>
+<p class="p2"><b>midiout ( port )</b></p>
+<p class="p6"><br></p>
+<p class="p2">Shortcut to connect MIDIOut. Takes SimpleNumber as destination and argument is port</p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s9">h = 0.midiout(0); </span>//destination at 1, port at 0</p>
+<p class="p7">h.noteOn(0,100,100);</p>
+<p class="p7">h.noteOff(0,100,0);</p>
+<p class="p6"><br></p>
+<p class="p2"><b>chanRec ( sampleFormat )</b></p>
+<p class="p6"><br></p>
+<p class="p2">Shortcut to record to file. Takes SimpleNumber as number of channels to record.</p>
+<p class="p3"><br></p>
+<p class="p9"><span class="s9">r = 1.chanRec(</span><span class="s10">"int16"</span><span class="s9">); </span>//1 channel recording with sample format of int16</p>
+<p class="p9"><span class="s9">r.startRec; </span>//start recording</p>
+<p class="p7">a = {<span class="s3">Saw</span>.ar(400, 0.1)}.play(s) <span class="s5">//something to record</span></p>
+<p class="p7">a.free;</p>
+<p class="p9"><span class="s9">r.stopRec; </span>//stop recording</p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">SequenceableCollection</span></b></p>
+<p class="p5"><br></p>
+<p class="p2"><b>midipyth( frequency )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Converts MIDI numbers to pythagorean tunning. Argument is frequency that the ratios are tunned to.</p>
+<p class="p3"><br></p>
+<p class="p7">[60,62,64,65,67,69,71,72].midipyth(440);</p>
+<p class="p7">[60,62,64,65,67,69,71,72].midipyth(415);</p>
+<p class="p6"><br></p>
+<p class="p2"><b>midijust( frequency )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Converts MIDI numbers to pythagorean tunning. Argument is frequency that the ratios are tunned to.</p>
+<p class="p3"><br></p>
+<p class="p7">[60,62,64,65,67,69,71,72].midijust(415);</p>
+<p class="p7">[60,62,64,65,67,69,71,72].midijust(440);</p>
+<p class="p6"><br></p>
+<p class="p2"><b>asTimeString( precision )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Returns a string corresponding to the hours:minutes:seconds based on the receiver as number of seconds<span class="Apple-tab-span">	</span>precision is 0.1 by default</p>
+<p class="p3"><br></p>
+<p class="p7">[ 835.48095, 836.26017 ].asTimeString</p>
+<p class="p5"><br></p>
+<p class="p4"><b><span class="s2">SimpleMIDIFile</span></b></p>
+<p class="p5"><br></p>
+<p class="p10"><span class="s9">a = </span><span class="s3">SimpleMIDIFile</span><span class="s9">(</span>"/Users/freuben/Documents/SuperCollider/Fede's/Zizek!/zizekOck.mid"<span class="s9">); </span><span class="s5">//your path</span></p>
+<p class="p9"><span class="s9">a.read; </span>//read midifile</p>
+<p class="p7">a.convertNoteOns(0); <span class="s5">//only if necessary</span></p>
+<p class="p5"><br></p>
+<p class="p2"><b>trackSilence ( track )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Tracks silence in each miditrack. Returns an array with start and end times of silences.</p>
+<p class="p3"><br></p>
+<p class="p7">a.trackSilence(1) <span class="s5">//in ticks</span></p>
+<p class="p3"><br></p>
+<p class="p9"><span class="s9">a.timeMode = </span><span class="s4">\seconds</span><span class="s9">; </span>//change timemode to seconds</p>
+<p class="p6"><br></p>
+<p class="p7">a.trackSilence(1).asTimeString.dopostln;</p>
+<p class="p5"><br></p>
+<p class="p2"><b>phraseStructure ( numTracks, gridScale, sysWin, color, winSize )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Draws a graph of phrase structure. The graph may be scaled, as well as it is possible to adjust: how many systems per window; color or black and white; small or fullScreen window size.</p>
+<p class="p3"><br></p>
+<p class="p9"><span class="s9">a.phraseStructure(4, 2.5, 4, </span><span class="s4">\color</span><span class="s9">, </span><span class="s4">\small</span><span class="s9">); </span>//4 tracks, 2.5 seconds per square, 4 systems per window, colors and small window size</p>
+<p class="p9"><span class="s9">a.phraseStructure(4, 2.5, 4, </span><span class="s11">\color</span><span class="s9">, </span><span class="s11">\small</span><span class="s9">, 1); </span>//add an argument for a time threshold that ignores silences smaller than 1 second</p>
+<p class="p7">a.phraseStructure(4, 3.3, 8, <span class="s4">\white</span>, <span class="s4">\fullScreen</span>);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><br></p>
+<p class="p2"><b>eggCut (arr, tracksMIDI, otherPath )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Cuts a midifile to create new midifiles from remaining sections. Takes an array of times where to cut the file.</p>
+<p class="p6"><br></p>
+<p class="p7">~arr = a.equalCutArray(158); <span class="s5">//returns equal cuts of 158<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s9">~midiTracks = a.trackArrMIDIEvents; </span>//calculates tracks that use midiEvent and returns them in an array</p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s9">a.eggCut(~arr, ~midiTracks); </span>//cuts the midiFile to produce new ones in the same path as MIDIFile</p>
+<p class="p6"><br></p>
+<p class="p7">~arr = <span class="s3">Array</span>.fill(20, {rrand(0, 854.96297191406)}).sort; <span class="s5">//random cuts</span></p>
+<p class="p6"><br></p>
+<p class="p10"><span class="s9">a.eggCut(~arr, ~midiTracks, </span>"/Users/freuben/Documents/SuperCollider/Fede's/Zizek!/zizekOck2.mid"<span class="s9">); </span><span class="s5">//puts the new file in an alternative path</span></p>
+<p class="p5"><br></p>
+<p class="p2"><b>playTrackType( track, type, function, startTime, mulTempo )</b></p>
+<p class="p5"><br></p>
+<p class="p2">Plays midievents of different type and for different tracks on a Routine. The function with arguments, channel, note and velocity is evaluated according to time. It is possible to start the routine further in time and to adjust the tempo by multiplication.</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7">~startTime = 30;</p>
+<p class="p7">~adjTempo = 1.2;</p>
+<p class="p7">a.playTrackType(1, <span class="s12">\noteOn</span>, {<span class="s13">arg</span> chan,note,vel; <span class="s10">"Track1: "</span>.post; [chan,note,vel].postln;}, ~startTime, ~adjTempo);</p>
+<p class="p7">a.playTrackType(2, <span class="s12">\noteOn</span>, {<span class="s13">arg</span> chan,note,vel; <span class="s10">"Track2: "</span>.post; [chan,note,vel].postln;}, ~startTime, ~adjTempo);</p>
+<p class="p7">a.playTrackType(3, <span class="s12">\noteOn</span>, {<span class="s13">arg</span> chan,note,vel; <span class="s10">"Track3: "</span>.post; [chan,note,vel].postln;}, ~startTime, ~adjTempo);</p>
+<p class="p7">a.playTrackType(4, <span class="s12">\noteOn</span>, {<span class="s13">arg</span> chan,note,vel; <span class="s10">"Track4: "</span>.post; [chan,note,vel].postln;}, ~startTime, ~adjTempo);<span class="s14"><span class="Apple-converted-space"> </span></span></p>
+<p class="p2">)</p>
+<p class="p3"><br></p>
+<p class="p2"><b>playSustain( function, startTime, mulTempo )</b></p>
+<p class="p3"><b></b><br></p>
+<p class="p2">Plays midievents as note sutain Events on a Routine. The function with arguments: tack, note velocity and duration is evaluated according to time. It is possible to start the routine further in time and to adjust the tempo by multiplication.</p>
+<p class="p3"><b></b><br></p>
+<p class="p7">s.boot;</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s15">SynthDef</span>(<span class="s16">\DurSine</span>, {<span class="s15">arg</span> pan = 0, out=0, freq=220, amp=0.5, dur=1;</p>
+<p class="p7"><span class="s15">var</span> signal, signal2, env;<span class="Apple-converted-space"> </span></p>
+<p class="p7">signal = <span class="s15">SinOsc</span>.ar(freq, 0, 0.5);<span class="Apple-converted-space"> </span></p>
+<p class="p7">env = <span class="s15">EnvGen</span>.kr(<span class="s15">Env</span>.linen(dur*0.01,dur*0.9,dur*0.09), doneAction: 2);</p>
+<p class="p7">signal2 =<span class="Apple-converted-space">  </span>signal * env;</p>
+<p class="p7"><span class="s15">Out</span>.ar(out, <span class="s15">Pan2</span>.ar(signal2, pan, amp));</p>
+<p class="p7">}).send(s);</p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7">~startTime = 50;</p>
+<p class="p7">~adjTempo = 0.9;</p>
+<p class="p7">a.playSustain({<span class="s15">arg</span> track, note, vel, dur;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s15">var</span> newNote, newDur;</p>
+<p class="p7">[track, note, vel, dur].postln;</p>
+<p class="p7">newNote = note + 12;</p>
+<p class="p7">if(dur &gt; 5, {newDur = 0.5}, {newDur = dur});<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s15">Synth</span>(<span class="s16">\DurSine</span>, [<span class="s16">\freq</span>, newNote.midicps, <span class="s16">\amp</span>, vel.linlin(0,127,0,1)/a.tracks, <span class="s16">\dur</span>, newDur, <span class="s16">\pan</span>, track.linlin(1,a.tracks,1,-1)]);</p>
+<p class="p7">}, ~startTime, ~adjTempo);</p>
+<p class="p7">)</p>
+<p class="p3"><br></p>
+<p class="p2"><b>sectionPlay( track, function, startTime, mulTempo )</b></p>
+<p class="p5"><br></p>
+<p class="p2">Plays sections of either silence or sound and evaluates a function.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p7">a.sectionPlay(1,<span class="Apple-converted-space">  </span>{<span class="s13">arg</span> val; val.postln;}, 0, 0.25);<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p2"><b>phrasePlay( track, funcSound, funcSilence, startTime, mulTempo )</b></p>
+<p class="p5"><br></p>
+<p class="p2">Plays sections of either silence or sound and evaluates them in two separete functions: one for the sounding parts of the midifile and one for the silence.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p7">(</p>
+<p class="p7">~startTime = 30;</p>
+<p class="p7">~adjTempo = 1;</p>
+<p class="p7">a.phrasePlay(1,<span class="Apple-converted-space">  </span>{<span class="s13">arg</span> sec; sec.postln;}, {<span class="s13">arg</span> sil; sil.postln;}, ~startTime, ~adjTempo);</p>
+<p class="p7">a.phrasePlay(2,<span class="Apple-converted-space">  </span>{<span class="s13">arg</span> sec; sec.postln;}, {<span class="s13">arg</span> sil; sil.postln;}, ~startTime, ~adjTempo);</p>
+<p class="p7">a.phrasePlay(3,<span class="Apple-converted-space">  </span>{<span class="s13">arg</span> sec; sec.postln;}, {<span class="s13">arg</span> sil; sil.postln;}, ~startTime, ~adjTempo);</p>
+<p class="p7">a.phrasePlay(4,<span class="Apple-converted-space">  </span>{<span class="s13">arg</span> sec; sec.postln;}, {<span class="s13">arg</span> sil; sil.postln;}, ~startTime, ~adjTempo);</p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">MIDIOut</span></b></p>
+<p class="p5"><br></p>
+<p class="p2"><b>midipattern( channels, notes, velocities, durations, legatos, repetitions )</b></p>
+<p class="p3"><br></p>
+<p class="p2">Takes arrays of mididata and uses a pattern to play midiout.</p>
+<p class="p5"><br></p>
+<p class="p7">h.midipattern([1,1],[68,69],[69,64], [1,2],[0.1,1],1)</p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">Server</span></b></p>
+<p class="p6"><br></p>
+<p class="p2"><b>bufArr</b></p>
+<p class="p3"><br></p>
+<p class="p2">Returns an array of buffers in the server<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p7">s.bufArr;</p>
+<p class="p6"><br></p>
+<p class="p11">10.do{Buffer<span class="s9">.alloc;}</span></p>
+<p class="p6"><br></p>
+<p class="p7">s.bufArr.dopostln;</p>
+<p class="p6"><br></p>
+<p class="p2"><b>freeBuffers</b></p>
+<p class="p6"><br></p>
+<p class="p2">Frees all buffers in the server</p>
+<p class="p3"><br></p>
+<p class="p7">s.freeBuffers;</p>
+<p class="p7">s.bufArr;</p>
+<p class="p6"><br></p>
+<p class="p4"><b><span class="s2">Collection</span></b></p>
+<p class="p5"><br></p>
+<p class="p2"><b>readPaths</b></p>
+<p class="p3"><br></p>
+<p class="p2">Creates an array of paths from a basic path and a file type "tail".</p>
+<p class="p3"><br></p>
+<p class="p10"><span class="s9">~basicPath = </span>"/Users/freuben/Library/Application Support/SuperCollider/Extensions/FedeClasses/Instruments/Samplers/wav/"</p>
+<p class="p7">~tail = <span class="s10">"wav"</span>;</p>
+<p class="p6"><br></p>
+<p class="p7">a = [<span class="s10">"zizek"</span>, <span class="s10">"drum1"</span>, <span class="s10">"drum2"</span>, <span class="s10">"zizek"</span>, <span class="s10">"drum1"</span>].readPaths(~basicPath, ~tail);</p>
+<p class="p6"><br></p>
+<p class="p2"><b>readBuffers</b></p>
+<p class="p3"><br></p>
+<p class="p2">Takes an array of paths and allocates a for each path a buffer and reads a soundfile into it. It does so by using the "action" agrument in chain creating one buffer after the other and puting the buffers in an array so they can be accessed by their index. The aregument is a string of the variable you want to assign the array of buffers to.</p>
+<p class="p3"><br></p>
+<p class="p7">s.boot;</p>
+<p class="p6"><br></p>
+<p class="p12"><span class="s9">a.readBuffers(</span><span class="s10">"b"</span><span class="s9">); </span>//string for variable to assign buffer array to global variable "b"</p>
+<p class="p6"><br></p>
+<p class="p12"><span class="s9">b.dopostln; </span>//post buffers</p>
+<p class="p6"><br></p>
+<p class="p12"><span class="s9">s.freeBuffers; </span>//frees all buffers in server</p>
+</body>
+</html>
