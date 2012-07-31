@@ -3,7 +3,7 @@ SpearToMIDI : SpearToSC {
 		var <>threshAmp=0.01, <>frequencyMod=1.0, <>dataGliss, <>dataNote, <>m;
 		var <>x1, <>x2, <>x3, <>x4, <>x5, <>x6, <>x7, <>x8, <>x9, <>x10;
 		var <>freqArray, <>ampArray, <>startTimeArray, <>durArray, <>oscArray, <>timesArr;
-		var <>noteNumber, <>velo, <>startTime, <>dur, <loud, <infoArray, <infoArrayPar;
+		var <>noteNumber, <>velo, <>startTime, <>dur, <loud, <infoArray, <infoArrayPar, <>midiNoteArr;
 		
 		
 		threshGroups {arg ampthresh = 0.01, partialnumber=partialNum;
@@ -213,7 +213,7 @@ SpearToMIDI : SpearToSC {
 		h = g.size/3;
 		z = Array.iota(h.asInteger, 3);
 		g = g.reshapeLike(z);
-		g.do({|item| item[1] = item[1].midinote });
+		g.do({|item| item[1] = item[1].midicnote });
 		g.dopostln;
 		}
 		
@@ -254,6 +254,7 @@ SpearToMIDI : SpearToSC {
 		findInfo {arg filter=0, minRange=21, maxRange=108;
 		var count, count2, count3, duration, midiNumber, veloNumber, startTime;
 		count = 0;
+		infoArray = [];
 		infoArrayPar = this.dataNote;
 		this.findLoudest;
 		this.dataNote.size.do({count2 = 0;
@@ -264,7 +265,6 @@ SpearToMIDI : SpearToSC {
 		 midiNumber = this.dataNote[count][count2].flop[1][count3]; //find midiNum
 		veloNumber = this.dataNote[count][count2].flop[2][count3].linlin(0,loud,0,127).round(1); //find velocity
 		startTime = this.dataNote[count][count2].flop[0][count3]+1; //find startTime
-		
 		//filter notes
 		if(filter == 1, {
 		if((this.dataNote[count][count2].flop[1][count3] >= minRange).and(this.dataNote[count][count2].flop[1][count3] < maxRange), { //filter notes higher than a0 and c8
@@ -284,7 +284,98 @@ SpearToMIDI : SpearToSC {
 		});
 		}
 		
-		midiFileNote {arg pathMIDIFile="~/Desktop/midiSpeartest.mid", tempo=120, timeSig="4/4", trackDiv=6, filter=0, velAdj=10;
+		//midiFileNote {arg pathMIDIFile="~/Desktop/midiSpeartest.mid", tempo=120, timeSig="4/4", trackDiv=6, filter=0, velAdj=10, wait=0, post=false;
+//		var count, count2, count3, g, h, z, f, minTrack, tracknum, loud, duration, track; 
+//		count = 0;
+//		Routine({
+//		'computing...'.postln;
+//		g = this.dataNote;
+//		g = g.flat;
+//		h = g.size/3;
+//		z = Array.iota(h.asInteger, 3);
+//		g = g.reshapeLike(z);
+//		f = [];
+//		g.do({|item, index|  f = f.add(item[1]) });
+//		minTrack = f.minItem.midioctave(trackDiv);
+//		tracknum = f.maxItem.midioctave(trackDiv)-minTrack;
+//		m = SimpleMIDIFile( pathMIDIFile ); 
+//		m.init1( (tracknum+1), tempo, timeSig );			
+//		m.timeMode = \seconds;  
+//		//figuring out loadest partial
+//		f = [];
+//		g.do({|item, index|  f = f.add(item[2]) });
+//		loud = f.maxItem;
+//		wait.yield;
+//		this.dataNote.size.do({count2 = 0;
+//		this.dataNote[count].size.do({count3 = 0;
+//		this.dataNote[count][count2].size.do({
+//		 if(this.dataNote[count][count2].flop[0][count3+1] == nil, {duration = [0.1,0.05].choose}, {
+//		 duration = this.dataNote[count][count2].flop[0][count3+1] - this.dataNote[count][count2].flop[0][count3]});
+//		track = this.dataNote[count][count2].flop[1][count3].midioctave(trackDiv);
+//		if(filter == 1, {
+//		if((this.dataNote[count][count2].flop[1][count3] >= 21).and(this.dataNote[count][count2].flop[1][count3] < 108), { //filter notes higher than a0 and c8
+//		m.addNote(this.dataNote[count][count2].flop[1][count3], (this.dataNote[count][count2].flop[2][count3].linlin(0,loud,0,127)+velAdj).round(1).min(127), this.dataNote[count][count2].flop[0][count3]+1, duration, 127, track:  (tracknum-(track-minTrack)));
+//		});
+//		},{ //if filter is not 1 then ignore filter
+//		m.addNote(this.dataNote[count][count2].flop[1][count3], (this.dataNote[count][count2].flop[2][count3].linlin(0,loud,0,127)+velAdj).round(1).min(127), this.dataNote[count][count2].flop[0][count3]+1, duration, 127, track:  (tracknum-(track-minTrack)));
+//		});
+//		
+//		count3 = count3 + 1; 
+//		wait.yield;
+//		});
+//		count2 = count2 + 1; 
+//		wait.yield;
+//		});
+//		count = count + 1; 
+//		count.postlnbool(post);	
+//		wait.yield;
+//		});
+//		0.02.yield;
+//		m.prAdjustEndOfTrack(1, 2.0); 
+//		0.02.yield;
+//		m.write; 
+//		'done'.postln;
+//		}).play
+//
+//}
+
+
+		midiFileFormat {var newArr;
+			midiNoteArr.do({|item| 
+				newArr = newArr.add([item[4], item[2], \noteOn, 0, item[0], item[1]]); 
+				newArr = newArr.add([item[4], item[2] + item[3], \noteOff, 0, item[0], 127]);
+			});
+			^newArr;
+		}
+		
+		midiFileNote {arg pathMIDIFile="~/Desktop/midiSpeartest.mid", tempo=120, timeSig="4/4", wait=0.2;
+		var midiData;
+		
+		if(midiNoteArr.notNil, {
+		
+		Routine({1.do({
+			
+		midiData = this.midiFileFormat;
+		
+		wait.yield;
+		
+		m = SimpleMIDIFile( pathMIDIFile ); 
+		
+		m.init1( midiNoteArr.flop[0].maxItem, tempo, timeSig );			
+		m.timeMode = \seconds;  
+
+		m.addAllMIDIEvents(midiData);
+		
+		wait.yield;
+		
+		m.prAdjustEndOfTrack(1, 2.0); 
+		
+		m.write;
+		})}).play; 	
+		});
+		}
+		
+		midiFileNoteInfo {arg trackDiv=6, filter=0, velAdj=10, wait=0, post=false;
 		var count, count2, count3, g, h, z, f, minTrack, tracknum, loud, duration, track; 
 		count = 0;
 		Routine({
@@ -295,17 +386,15 @@ SpearToMIDI : SpearToSC {
 		z = Array.iota(h.asInteger, 3);
 		g = g.reshapeLike(z);
 		f = [];
+		midiNoteArr = [];
 		g.do({|item, index|  f = f.add(item[1]) });
 		minTrack = f.minItem.midioctave(trackDiv);
 		tracknum = f.maxItem.midioctave(trackDiv)-minTrack;
-		m = SimpleMIDIFile( pathMIDIFile ); 
-		m.init1( (tracknum+1), tempo, timeSig );			
-		m.timeMode = \seconds;  
-		//figuring out loadest partial
+		
 		f = [];
 		g.do({|item, index|  f = f.add(item[2]) });
 		loud = f.maxItem;
-		//0.02.yield;	
+		wait.yield;
 		this.dataNote.size.do({count2 = 0;
 		this.dataNote[count].size.do({count3 = 0;
 		this.dataNote[count][count2].size.do({
@@ -314,30 +403,30 @@ SpearToMIDI : SpearToSC {
 		track = this.dataNote[count][count2].flop[1][count3].midioctave(trackDiv);
 		if(filter == 1, {
 		if((this.dataNote[count][count2].flop[1][count3] >= 21).and(this.dataNote[count][count2].flop[1][count3] < 108), { //filter notes higher than a0 and c8
-		m.addNote(this.dataNote[count][count2].flop[1][count3], (this.dataNote[count][count2].flop[2][count3].linlin(0,loud,0,127)+velAdj).round(1).min(127), this.dataNote[count][count2].flop[0][count3]+1, duration, 127, track:  (tracknum-(track-minTrack)));
+		
+		midiNoteArr = midiNoteArr.add([this.dataNote[count][count2].flop[1][count3], (this.dataNote[count][count2].flop[2][count3].linlin(0,loud,0,127)+velAdj).round(1).min(127), this.dataNote[count][count2].flop[0][count3], duration, (tracknum-(track-minTrack))]); //noteNumber, velo, startTime, duration, track
+		
 		});
 		},{ //if filter is not 1 then ignore filter
-		m.addNote(this.dataNote[count][count2].flop[1][count3], (this.dataNote[count][count2].flop[2][count3].linlin(0,loud,0,127)+velAdj).round(1).min(127), this.dataNote[count][count2].flop[0][count3]+1, duration, 127, track:  (tracknum-(track-minTrack)));
+		midiNoteArr = midiNoteArr.add([this.dataNote[count][count2].flop[1][count3], (this.dataNote[count][count2].flop[2][count3].linlin(0,loud,0,127)+velAdj).round(1).min(127), this.dataNote[count][count2].flop[0][count3], duration, (tracknum-(track-minTrack))]); //noteNumber, velo, startTime, duration, track
+		
 		});
 		
 		count3 = count3 + 1; 
-		//0.01.yield;
+		wait.yield;
 		});
 		count2 = count2 + 1; 
-		//0.02.yield;
+		wait.yield;
 		});
 		count = count + 1; 
-		//count.postln;
-//		0.02.yield;
+		count.postlnbool(post);	
+		wait.yield;
 		});
-		0.02.yield;
-		m.prAdjustEndOfTrack(1, 2.0); 
-		0.02.yield;
-		m.write; 
 		'done'.postln;
 		}).play
 
 }
+
 		midiArrayNote {
 		var count, count2, count3, duration, g, h, z, f,loud; 
 		count = 0;
@@ -471,27 +560,45 @@ oscArray = x;
 		
 }
 
-	midiArrayGliss {
+	midiArrayGliss {var brandNew, newArr;
 	timesArr = [];
 	freqArray = [];
 	ampArray = [];
 
-Routine({var step, arr;
-step = 0;
-'computing...'.postln;
-(dataGliss.size).do({
-arr =  dataGliss[step].unbubble;
-timesArr = timesArr.addAll([arr.flop[0]]);
-freqArray = freqArray.addAll([arr.flop[1].midicps]);
-ampArray = ampArray.addAll([arr.flop[2]]);
-step = step + 1;
-0.01.yield;
-});
-"done".postln;
-}).play;
+	dataGliss.do({|its|
+	its.do({|item| var times, midi, amp; item.do({|it| times=times.add(it[0]); 	midi=midi.add(it[1].midicps); amp=amp.add(it[2]); }); newArr=newArr.add([times,midi,amp]) });
+	});
+
+	brandNew = newArr.sort({ arg a, b; a[0][0] <= b[0][0] });
+
+	timesArr = brandNew.flop[0];
+	freqArray = brandNew.flop[1];
+	ampArray = brandNew.flop[2];
 
 	
 	}
+	
+	//	midiArrayGliss {
+//	timesArr = [];
+//	freqArray = [];
+//	ampArray = [];
+//
+//Routine({var step, arr;
+//step = 0;
+//'computing...'.postln;
+//(dataGliss.size).do({
+//arr =  dataGliss[step].unbubble;
+//timesArr = timesArr.addAll([arr.flop[0]]);
+//freqArray = freqArray.addAll([arr.flop[1].midicps]);
+//ampArray = ampArray.addAll([arr.flop[2]]);
+//step = step + 1;
+//0.01.yield;
+//});
+//"done".postln;
+//}).play;
+//
+//	
+//	}
 
 	getOSCArrayGliss {arg synth = "envelopeFreq", adjVol = 1.0, adjFreq=1, extraArgs=[], timeOffSet=0.0;
 var first, freqs, times, amps, func=[], funcIndex=[], x, y, z;
@@ -684,6 +791,13 @@ parStep = parStep + 1;
 		^newArray;
 		}
 		
+		listScore {arg dur=200;
+		var scoreMidArr;
+		scoreMidArr = infoArray.sort({arg a, b; a[0] <= b[0]});
+		scoreMidArr = scoreMidArr.reject({|item| item[1] > dur});
+		^scoreMidArr;
+		}
+		
 		//midiVel {var newArray=[];
 //		this.dataNote.do({|item| newArray = newArray.add(item.flat[1])});
 //		^newArray;
@@ -695,7 +809,7 @@ parStep = parStep + 1;
 		h = g.size/3;
 		z = Array.iota(h.asInteger, 3);
 		g = g.reshapeLike(z);
-		g.do({|item| item[1] = item[1].midinote });
+		g.do({|item| item[1] = item[1].midicnote });
 		g.dopostln;
 		}
 		

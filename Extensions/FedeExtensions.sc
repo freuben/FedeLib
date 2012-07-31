@@ -1,528 +1,11 @@
-+ SimpleMIDIFile {
-
-	trackSilence {arg track=1, thresh=0;
-	var timeOnTrk, timeOffTrk, b,c,d,e, f, removeOff, arr, removeOffArr;
-	
-	arr = this.midiEvents.flop[1].indexOfAll(this.endOfTrack.flop[1]);
-	if(arr.includes(0), {arr.remove(0);});
-	arr = arr.rejectNil;
-	
-	if(this.midiEvents.itemsAt(arr).notNil, {
-	this.midiEvents.removeAll(this.midiEvents.itemsAt(arr));
-	});
-	
-	removeOff = this.midiEvents.flop[2].findAll([\noteOff, \noteOff]);
-
-	if(removeOff.notNil, {
-	removeOffArr = this.midiEvents.itemsAt(removeOff);
-	this.midiEvents.removeAll(removeOffArr);
-	});
-	
-	timeOnTrk = this.midiTrackTypeEvents(track, \noteOn).flop[1]; //get times for noteOn events in track
-	timeOffTrk = this.midiTrackTypeEvents(track, \noteOff).flop[1]; //get times for noteOff events in track
-	
-	b = timeOffTrk.collectDiff(timeOnTrk); //difference between timeOffTrk and timeOnTrk
-
-	d = (timeOnTrk ++ this.endOfTrack(track).flat[1]); //add endoftrack to noteOn
-
-	c = d.roundUpList(b); //looks for closest item after noteOff
-
-	e = [b, c].flop; //pairs of noteOff and noteOn for silence
-	
-	e.do{|item| 
-	if(item[1] - item[0] > thresh, {
-	f = f.add(item);
-	});
-	}; //time threshold, ignores silences smaller than the threshold
-
-	if(timeOnTrk[0] != 0, {f = [[0, timeOnTrk[0]]] ++ f}); //if first noteOn is not 0, then add silence
-	
-	^f;
-
-	}
-	
-	phraseStructure {arg numTracks=4, gridScale=2.6, sysPage=4, color=\color, winSize=\small, thresh=0;
-var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix, patTrack, trackPos, busyOrder, pat, newPix, thisPix, colorArr, track1Pix, pixLimit, screenArr, lenghPix, toSecs, amountWin, secsPage, nameNum, fileName, lastFunc, endofThisTrack, inWhichRow, thisLine;
-
-		if(winSize == \fullScreen, {
-			screenArr =  SCWindow.screenBounds.asArray;
-			rect = Rect(screenArr[0],screenArr[1]+20, screenArr[2], screenArr[3]-40);
-			}, {
-			rect = Rect(128, 64, 400, 400);
-		});
-		
-		squareWidth = (rect.width-40);
-		squareHeight =(rect.height-40);
-		trackDiv = numTracks * sysPage;
-		trackWidth = squareWidth / trackDiv;
-		trackHeight = squareHeight / trackDiv;
-		toPix = trackWidth / gridScale;
-		
-		lenghPix = this.length * toPix;
-		amountWin = (lenghPix / (squareWidth*sysPage)).roundUp(1);
-		toSecs = gridScale / trackWidth;
-		secsPage = (squareWidth*sysPage) * toSecs;
-
-		"amount of pages: ".post; amountWin.postln;
-		"amount of time per page: ".post; secsPage.postln;
-		
-		nameNum = this.pathName.findAll("/").maxItem + 1;
-		fileName = this.pathName.copyRange(nameNum, this.pathName.size-1);
-
-		
-		w = SCWindow(fileName, rect).front;
-		w.view.background_(Color.white);
-		w.drawHook = {var step=0, trackStep=0;
-
-		
-		patTrack = Pseq([0,1,2,3,2,1], inf).asStream; //pattern for coloring tracks
-
-			//grid
-			trackDiv.do{
-				// set the Color
-				Pen.color = Color.grey;
-				Pen.addRect(
-					Rect(20, 20+(step*trackHeight), squareWidth, (rect.height-(40+(step*trackHeight))))
-				);
-				Pen.perform(\stroke);
-				step  = step + 1;
-				
-			};
-			step=0;
-			trackDiv.do{
-				// set the Color
-				Pen.color = Color.grey;
-				Pen.addRect(
-					Rect(20+(step*trackWidth), 20, (rect.width-(40+(step*trackWidth))), squareHeight)
-				);
-				Pen.perform(\stroke);
-				step  = step + 1;
-				
-			};
-			//function for ending
-			lastFunc = {arg barStart, barEnd, whereBar, position;
-			Pen.width = 1.5;
-			Pen.color = Color.white;		
-			Pen.addRect(
-			Rect(20+barStart, 20+(trackHeight*(whereBar*numTracks+position)), barEnd, trackHeight)
-			);
-			Pen.perform([\stroke]);
-			Pen.color = Color.white;		
-			Pen.addRect(
-			Rect(20+barStart, 20+(trackHeight*(whereBar*numTracks+position)), barEnd, trackHeight)
-			);
-			Pen.perform([\fill]);
-			 };
-			 
-			//info
-			trackPos=1;
-			numTracks.do{
-			track1Pix = (this.trackSilence(trackPos, thresh).flat * toPix);
-			newPix = track1Pix.recursiveClip(squareWidth);
-			//for different colors (change this for more tracks)
-			busyOrder = [0,0,0,0.6];
-			busyOrder.put(patTrack.next, rrand(0.8, 0.5));
-			if(color == \color, {
-			pat = Pseq([busyOrder, [0,0,0,0.2]], inf).asStream;
-			} , {
-			pat = Pseq([[0,0,0,0.0], [0,0,0,0.6]], inf).asStream;
-			});
-			trackStep=0;
-
-			sysPage.do({
-			step=0;
-			thisPix = newPix[trackStep] ++ [squareWidth];
-			thisPix.do({ 
-			pixLimit = thisPix.pairsInArray[step].differentiate;
-				// set the Color
-				colorArr = pat.next;
-				if(colorArr.notNil, {
-				Pen.color = Color.new(colorArr[0], colorArr[1], colorArr[2], colorArr[3]);
-				});
-				//Pen.color = Color.green(colorArr[0],colorArr[1]);
-				Pen.addRect(
-					Rect(20+pixLimit[0], 20+(trackHeight*((trackPos+(trackStep*numTracks))-1)), pixLimit[1], trackHeight)
-				);
-				Pen.perform([\fill]);
-				step  = step + 1;
-				
-			
-			 });
-
-			 trackStep = trackStep + 1;
-			 pat.next;
-			 });
-			 
-			//ending
-			endofThisTrack = this.endOfTrack(trackPos).flat[1] * toPix;
-			inWhichRow = [(endofThisTrack)].recursiveClip(squareWidth); //find out rows
-			step = 0;
-			numTracks.do({
-			thisLine = inWhichRow[step];
-			if(thisLine.notNil, {
-			if(thisLine.notEmpty, {
-			lastFunc.value(thisLine[0], squareWidth-thisLine[0], step, (trackPos-1));
-			});
-			}, {
-			lastFunc.value(0, squareWidth, step, (trackPos-1));
-			});
-			step = step + 1;
-			});
-			
-			trackPos = trackPos + 1;
-			 
-		};	
-		
-		
-		
-		};
-		
-		w.refresh;
-
-	}
-	
-	trackArrMIDIEvents {
-	^midiEvents.flop[0].rejectSame;
-	}
-	
-	trackArrMetaEvents {
-	^metaEvents.flop[0].rejectSame;
-	}
-	
-	equalCutArray {arg cut;
-	var arr;
-	arr = (cut, cut*2.. midiEvents.flop[1].maxItem) ++ midiEvents.flop[1].maxItem;
-	^arr;
-	}
-	
-	eggCut {arg arr, tracksMIDI, otherPath;
-	var globArrMIDI, globArrMeta, noteTypeArr, ccArr, programArr, trackName, timeSignature, tempo, copyRight, keySignature, whichCut, lowLimit, highLimit, groupMIDI, initTracks, firstTracks, finishNote, groupMeta, groupMIDI2, groupMeta2 , newPath, cc, noteType, program; 
-	
-	//if other path is nil then ignore, otherwise make new path
-	if(otherPath.notNil, {pathName = otherPath});
-	
-	//groups midi events in different cuts
-	globArrMIDI = []; 
-	midiEvents.do({|item|
-	var group;
-	group = (arr.indexInBetween(item[1]).roundUp(1));
-	globArrMIDI = globArrMIDI.add([group, item]);
-	});
-	
-	//groups meta events in different cuts
-	globArrMeta = [];
-	metaEvents.do({|item|
-	var group;
-	group = (arr.indexInBetween(item[1]).roundUp(1)); 
-	globArrMeta = globArrMeta.add([group, item]);
-	});
-	
-	noteTypeArr = [];
-	ccArr = [];
-	programArr = [];
-	trackName = [];
-	timeSignature = nil; //quitar esto para hacer la clase
-	tempo = nil;
-	copyRight = nil;
-	keySignature = nil;
-	
-	//loop starts
-	//midiEvents:
-	//finds low and high limits for each group
-	whichCut = 0;
-	
-	arr.do{
-	
-	lowLimit = if(arr[whichCut-1].notNil, {lowLimit = arr[whichCut-1]}, {lowLimit = 0});
-	highLimit = arr[whichCut];
-	
-	groupMIDI = [];
-	globArrMIDI.do({|item| 
-		if(item[0] == whichCut, {
-			groupMIDI = groupMIDI.add([item[1][0],item[1][1]-lowLimit,item[1][2], item[1][3], item[1][4], item[1][5]] )}); }); //acces midiEvents for each group
-	
-	midiEvents = groupMIDI; //new midiEvents to SimpleMIDIFile
-	
-	initTracks = [];
-	tracksMIDI.do({|tracks|
-	initTracks = initTracks.add(groupMIDI[groupMIDI.flop[0].indexOf(tracks)]);
-	}); 
-	
-	firstTracks = [];
-	initTracks.do({|item|
-		if(item[2] == \noteOff, {
-		firstTracks = firstTracks.add([item[0], 0, \noteOn, item[3], item[4], item[5]]);
-		}); //inserts noteOns if the first midiEvent is a noteOff
-	});
-	
-	if(firstTracks.notEmpty, {
-	this.addAllMIDIEvents(firstTracks);
-	groupMIDI = groupMIDI.add(firstTracks)
-	}); //adds first noteOns in tracks if there are any
-	
-	if(ccArr.notEmpty, {
-	this.addAllMIDIEvents(ccArr);
-	groupMIDI = groupMIDI.add(ccArr);
-	}); //adds ccs is any
-	
-	if(programArr.notEmpty, {
-	this.addAllMIDIEvents(programArr);
-	groupMIDI = groupMIDI.add(programArr);
-	}); //adds program if any
-	
-	//goes individually from track to track finding out last noteType, cc and program
-	noteTypeArr = [];
-	ccArr = [];
-	programArr = [];
-	
-	tracksMIDI.do({|track|
-	groupMIDI.do({|item|
-	if(item[0] == track, { item;
-	case
-		{(item[2] == \noteOn).or(item[2] == \noteOff)} {noteType = item;}
-		{item[2] == \cc} {cc = item;}
-		{item[2] == \program} {program = item;}
-		})
-	});
-	noteTypeArr = noteTypeArr.add(noteType);
-	ccArr = ccArr.add(cc);
-	programArr = programArr.add(program);
-	
-	});
-	
-	noteTypeArr = noteTypeArr.rejectNil;
-	//adds note off is last midiEven found is a noteOn
-	finishNote = [];
-	noteTypeArr.do({|item| 
-		if(item[2] == \noteOn, {
-			finishNote = finishNote.add([item[0], (highLimit-lowLimit), \noteOff, item[3], item[4], item[5]]);
-		});
-	});
-	
-	this.addAllMIDIEvents(finishNote); //add ending to not ons
-	
-	//metaEvents:
-	
-	groupMeta = [];
-	globArrMeta.do({|item| 
-		if(item[0] == whichCut, {
-			groupMeta = groupMeta.add([item[1][0],item[1][1]-lowLimit,item[1][2], item[1][3], item[1][4], item[1][5]] 
-		)}); 
-	}); //acces midiEvents for each group
-	
-	metaEvents = groupMeta; //new midiEvents to SimpleMIDIFile
-	
-	if(copyRight.notNil, {
-	copyRight.put(1,0);
-	metaEvents = metaEvents.add(copyRight);
-	});
-	
-	if(timeSignature.notNil, {
-	timeSignature.put(1,0);
-	metaEvents = metaEvents.add(timeSignature);
-	});
-	
-	if(keySignature.notNil, {
-	keySignature.put(1,0);
-	metaEvents = metaEvents.add(keySignature);
-	});
-	
-	if(tempo.notNil, {
-	tempo.put(1,0);
-	metaEvents = metaEvents.add(tempo);
-	});
-	
-	if(trackName.notEmpty, {
-	trackName.do({|item| item.put(1,0);
-	metaEvents = metaEvents.add(item);
-	});
-	});
-	
-	//goes individually from track to track finding out last noteType, cc and program
-	//trackName = [];
-	groupMeta.do({|item|
-			case
-			{item[2] == \copyright} {copyRight = item;}
-			{item[2] == \timeSignature} {timeSignature = item }
-			{item[2] == \keySignature} {keySignature = item }
-			{item[2] == \tempo} {tempo = item }
-			{item[2] == \trackName} {trackName = trackName.add(item) }
-	});
-	
-	
-	groupMIDI2 = [];
-	midiEvents.do({|item| groupMIDI2 = groupMIDI2.add(item.rejectNil)});
-	midiEvents = groupMIDI2;
-	
-	groupMeta2 = [];
-	metaEvents.do({|item| groupMeta2 = groupMeta2.add(item.rejectNil)});
-	metaEvents = groupMeta2;
-	
-	this.sortMetaEvents;
-	 
-	newPath = pathName.copyRange(0, pathName.size-5) ++ "_" ++ (whichCut+1).asString ++ ".mid";
-	
-	this.write( newPath ); //write new MIDIfile with information
-	
-	whichCut = whichCut + 1;
-
-	}
-
-	}
-
-	getStartIndex {arg track, type=\noteOn, newTime, adjTempo;
-	var trackInfo, times, times2, step;
-	trackInfo = this.midiTrackTypeEvents(track, type);
-	times = trackInfo.flop[1]; //get times for routine
-	times2 = times*adjTempo; //get times with adjust tempo
-	step = (times2.indexInBetween(newTime).roundUp).asInteger;
-	^step
-	}
-
-	playTrackType {arg track, type=\noteOn, function = {arg chan, note, vel; [chan,note,vel].postln}, newTime = 0, adjTempo=1;
-	var trackInfo, times, times2, lock, step, wait;
-	//gets track info for midiFile
-	if(this.timeMode != \seconds, {this.timeMode = \seconds});
-	trackInfo = this.midiTrackTypeEvents(track, type);
-	times = trackInfo.flop[1]; //get times for routine
-	times2 = times*adjTempo; //get times with adjust tempo
-	step = (times2.indexInBetween(newTime).roundUp).asInteger;
-	wait = (times2[step] - newTime);
-	if(wait == 0, {lock = 0}, {lock = 1}); //if wait is not 0, then ignore first yield 
-	//routine
-	Routine({
-	wait.yield; //initial wait time
-	trackInfo.size.do({
-	if(lock == 0, {
-	(times.differentiate[step]*adjTempo).yield;
-	});
-	lock = 0;
-	function.value(trackInfo.flop[3][step], trackInfo.flop[4][step], trackInfo.flop[5][step]);
-	//trackInfo[step].postln;
-	step = step + 1;
-	})}).play;
-	
-	}
-	
-	noteSustain {var arr;
-	if(this.timeMode != \seconds, {this.timeMode = \seconds});
-	arr = this.noteSustainEvents.collect({|item| [ item[0], item[1], item[4], item[5], item[6] ];});
-	arr.sort({ arg a, b; b[1] >= a[1] });
-	^arr;
-	}
-
-
-	playSustain {arg function = {arg track, note, vel, dur; [track,note,vel,dur].postln}, newTime = 0, adjTempo=1;
-	var sustainInfo, times, times2, lock, step, wait;
-
-	sustainInfo = this.noteSustain;
-	times = sustainInfo.flop[1]; //get times for routine
-	times2 = times*adjTempo; //get times with adjust tempo
-	step = (times2.indexOfEqualGreaterThan(newTime)).asInteger;
-	wait = (times2[step] - newTime);
-	if(wait == 0, {lock = 0}, {lock = 1}); //if wait is not 0, then ignore first yield 
-	//routine
-	Routine({
-	wait.yield; //initial wait time
-	sustainInfo.size.do({
-	if(lock == 0, {
-	(times.differentiate[step]*adjTempo).yield;
-	});
-	lock = 0;
-	function.value(sustainInfo.flop[0][step], sustainInfo.flop[2][step], sustainInfo.flop[3][step], sustainInfo.flop[4][step]);
-	//trackInfo[step].postln;
-	step = step + 1;
-	})}).play;
-
-}
-
-	
-	sectionPlay {arg track, function = {arg val; val.postln}, newTime = 0, adjTempo=1;
-	var times, section, lock, step, step2=0;
-	if(this.timeMode != \seconds, {this.timeMode = \seconds}); //make sure it's seconds
-	
-	times = this.trackSilence(track).flat*adjTempo; //get silence times for routine
-	step = (times.indexInBetween(newTime).roundUp).asInteger; //get steps
-	times = times-newTime; //get new arr taking newTime in consideration
-	times = times.reject({|item| item.isNegative }); //get rid of negative numbers
-	
-	section = step + 1; //sections start in 1
-	//routine
-	Routine({
-
-	times.size.do({
-	function.value(section);
-	
-	(times.differentiate[step2]).yield;
-	
-	step = step + 1;
-	section = step + 1;
-	step2 = step2 + 1;
-	})}).play;
-	
-	}
-
-	phrasePlay {arg track, func= {arg sec; sec.postln;}, funcSilence = {arg silence; silence.postln;}, newTime=0, adjTempo=1;
-	this.sectionPlay(track, {arg val;
-	var section, silence;
-	"Track".post; track.post;
-	if(val.odd, {" : Play: section: ".post;
-	//this is the sections starting with 1 (for better order);
-	section = val+1/2;
-	//specific info
-	func.value(section);
-	}, {
-	" : Silence: ".post;
-	silence = val/2;
-	funcSilence.value(silence);
-	}); 
-	}, 
-	newTime, //this is the new step 
-	adjTempo);
-
-	}
-
-	noteValues {arg track=1;
-	var timeOnTrk, timeOffTrk, noteValue;
-	  
-	timeOnTrk = this.midiTrackTypeEvents(track, \noteOn); //get times for noteOn events in track
-	timeOffTrk = this.midiTrackTypeEvents(track, \noteOff); //get times for noteOff events in track
-	
-	noteValue = [];
-	timeOnTrk.do({|item|
-	var array, type, note, time, noteOffArr;
-	array = item;
-	type = array[2];
-	note = array[4];
-	time = array[1];
-	
-	noteOffArr = [];
-	timeOffTrk.do({|item| if((item[2] == \noteOff).and(item[4] == note).and(item[1] > time), {noteOffArr = noteOffArr.add(item)}); });
-	if(noteOffArr.notEmpty, {
-	noteValue = noteValue.add(noteOffArr[0][1]-time);
-	});
-	});
-	
-	^noteValue;
-
-	}
-
-	playTrackNotes {arg track=1, duration, function = {arg chan, note, vel, dur; [chan,note,vel,dur].postln}, newTime=0, adjTempo=1;
-	var trackInfo, times, step;
-	if(this.timeMode != \seconds, {this.timeMode = \seconds});
-	trackInfo = this.midiTrackTypeEvents(track, \noteOn);
-	times = trackInfo.flop[1]*adjTempo; //get times for routine
-	"index start: ".post;
-	step = (times.indexInBetween(newTime).roundUp).asInteger.postln;
-	this.playTrackType(track, \noteOn, {arg chan,note,vel,dur; 
-	function.value(chan,note,vel,duration[step]);
-	step = step + 1;
-	}, newTime, adjTempo);
-	}
-
-}
-
 +SimpleNumber {
+	
+	midicnote {
+		var midi, notes;
+		midi = (this + 0.5).asInteger;
+		notes = ["c ", "c#", "d ", "d#", "e ", "f ", "f#", "g ", "g#", "a ", "a#", "b "];
+		^(notes[midi%12] ++ (midi.div(12) - 1));
+	}
 	
 	midinoteclass {
 		var midi, notes;
@@ -560,29 +43,25 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	});
 	^d;
 	}
-	
-	//variation of LJP Classes
-	midinote {
-		var midi, notes;
-		midi = (this + 0.5).asInteger;
-		notes = ["c ", "c#", "d ", "d#", "e ", "f ", "f#", "g ", "g#", "a ", "a#", "b "];
-		^(notes[midi%12] ++ (midi.div(12)-1))
-	}
-	
+
 	midiRange {arg lowLimit, highLimit;
 	var newNote, result;
+	if((this >= lowLimit).and(this <= highLimit), {
+	result = this;
+	}, {
 	newNote = this.min(highLimit).max(lowLimit);
-	result = (this.midinoteclass.pitchClass ++ (newNote.midioctave)).notemidi;
+	result = (this.midinoteclass.pitchClass ++ (newNote.midioctave)).cnotemidi;
 	case
 	{result > highLimit} {result = result - 12;}
 	{result < lowLimit} {result = result + 12};
+	});
 	^result;
 	}
 	
 	midiMax {arg limit;
 	var newNote;
 	if(this > limit, {
-	newNote = (this.midinoteclass.pitchClass ++ (limit.midioctave-1)).notemidi;
+	newNote = (this.midinoteclass.pitchClass ++ (limit.midioctave-1)).cnotemidi;
 	}, {
 	newNote = this;
 	});
@@ -592,7 +71,7 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	midiMin {arg limit;
 	var newNote;
 	if(this < limit, {
-	newNote = (this.midinoteclass.pitchClass ++ (limit.midioctave+1)).notemidi;
+	newNote = (this.midinoteclass.pitchClass ++ (limit.midioctave+1)).cnotemidi;
 	}, {
 	newNote = this;
 	});
@@ -664,7 +143,7 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	b.removeAt(0);
 	^(a ++ b)}
  	
- 	cpsnote { ^(this.cpsmidi.midinote)} 
+ 	cpsnote { ^(this.cpsmidi.midicnote)} 
  	
  	midiinterval {var d;
 	d = Dictionary["Uni"-> 0, "m2" -> 1, "M2" -> 2, "m3" -> 3, "M3" -> 4, "P4" -> 5, "A4" -> 6, "D5" -> 6, "P5" -> 7, "m6" -> 8, "M6" -> 9, "m7" -> 10, "M7" -> 11, "Oct" -> 12]; 
@@ -1020,6 +499,21 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	});
 	^result;
 	}
+	
+	calcPVRecReverse {arg hop=0.25, framesize=1024, sampleRate;
+	var rawsize, ceil, result;
+	sampleRate = sampleRate ?? {Server.default.sampleRate};
+	rawsize = this - 3 / hop.reciprocal;	
+	ceil = rawsize / framesize;
+	result = (ceil * framesize / sampleRate).round(0.1);
+	^result;
+	}
+	
+	bufRdRound {arg min=0, max=100;
+	var value;
+	value = this.linlin(0,1,0,(max-min)) + min;
+	^value;	
+	}
 
 }
 
@@ -1268,11 +762,21 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	});
 	^a;
 	}
+	
+	asPairs {
+	var arr2, arr3;
+	arr2 = Array.fill2D(this.size/2,2);
+	arr3 = this.reshapeLike(arr2);
+	^arr3	
+	}
 
 }
 
 +SequenceableCollection {
 
+	midicnote { ^this.performUnaryOp('midicnote') }
+	cnotemidi { ^this.performUnaryOp('cnotemidi') }
+	
 	midioctave {arg division=12; ^this.performBinaryOp('midioctave', division) }
 	midinotename { ^this.performUnaryOp('midinotename') }
 	midinoteclass { ^this.performUnaryOp('midinoteclass') }
@@ -1280,8 +784,6 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	midiinterval { ^this.performUnaryOp('midiinterval') }
 	invertion { ^this.performUnaryOp('invertion') } 
 	asTimeString { ^this.performUnaryOp('asTimeString') }
-	midinote { ^this.performUnaryOp('midinote') }
-	notemidi { ^this.performUnaryOp('notemidi') }
 	
 	excess2 {arg num=1; ^this.performBinaryOp('excess2', num) }
 	midiMin {arg value; ^this.performBinaryOp('midiMin', value) }
@@ -1486,6 +988,16 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	array = array.reject({|item| item == nil});
 	^array;
 	}
+	
+	seconds {var result;
+	result = numFrames/sampleRate;
+	^result;	
+	}
+	
+	pvseconds {var result;
+	result = (numFrames-(0.05*sampleRate))/sampleRate/4;
+	^result;	
+	}
 
 }
 
@@ -1498,23 +1010,9 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	
 }
 
-+String {
-	notecps { ^(this.notemidi.midicps)}
++ String {
 	
-	intervalmidi {var d;
-	d = Dictionary["Uni"-> 0, "m2" -> 1, "M2" -> 2, "m3" -> 3, "M3" -> 4, "P4" -> 5, "A4" -> 6, "D5" -> 6, "P5" -> 7, "m6" -> 8, "M6" -> 9, "m7" -> 10, "M7" -> 11, "Oct" -> 12]; 
-	^d.at(this);
-	
-	}
-	
-	invertion {var d, v;
-	d = Dictionary["Uni"-> 0, "m2" -> 1, "M2" -> 2, "m3" -> 3, "M3" -> 4, "P4" -> 5, "A4" -> 6, "D5" -> 6, "P5" -> 7, "m6" -> 8, "M6" -> 9, "m7" -> 10, "M7" -> 11, "Oct" -> 12]; 
-	v = 12 - this.intervalmidi;
-	^d.findKeyForValue(v);
-	
-	}
-	//variation of LJP Classes
-	notemidi {
+	cnotemidi {
 		var twelves, ones, octaveIndex, midis;
 		
 		midis = Dictionary[($c->0),($d->2),($e->4),($f->5),($g->7),($a->9),($b->11)];
@@ -1533,9 +1031,24 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 			});
 		});
 		twelves = (this.copyRange(octaveIndex, this.size).asInteger) * 12;
-		^((twelves + ones) + 12)
+		^(twelves + ones)+12
 	}
 	
+	notecps { ^(this.cnotemidi.midicps)}
+	
+	intervalmidi {var d;
+	d = Dictionary["Uni"-> 0, "m2" -> 1, "M2" -> 2, "m3" -> 3, "M3" -> 4, "P4" -> 5, "A4" -> 6, "D5" -> 6, "P5" -> 7, "m6" -> 8, "M6" -> 9, "m7" -> 10, "M7" -> 11, "Oct" -> 12]; 
+	^d.at(this);
+	
+	}
+	
+	invertion {var d, v;
+	d = Dictionary["Uni"-> 0, "m2" -> 1, "M2" -> 2, "m3" -> 3, "M3" -> 4, "P4" -> 5, "A4" -> 6, "D5" -> 6, "P5" -> 7, "m6" -> 8, "M6" -> 9, "m7" -> 10, "M7" -> 11, "Oct" -> 12]; 
+	v = 12 - this.intervalmidi;
+	^d.findKeyForValue(v);
+	
+	}
+		
 	path {
 		CocoaDialog.getPaths({ arg paths;
 		paths.do({ arg p;
@@ -1556,7 +1069,7 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	stripFileType {
 	var path;
 	path = this;
-	path = path.copyRange(0, (path.size-5));
+	path = path.dirname ++ "/" ++ path.filename;
 	^path;
 	}
 	
@@ -1564,13 +1077,36 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	var path, arr;
 	path = this;
 	path = path.filesInDir;
-	path.do({|item| arr = arr.add(item.stripFileType);});
+	path.do({|item| arr = arr.add(item.filename);});
 	^arr; 
 	}
 	
+	stripPVTypeArr {
+	var path, arr;
+	this.stripFileTypeArr.do({|item| arr = arr.add(item.replace(".", "").asSymbol); });
+	^arr; 
+	}
+	
+	findFullFileName {arg fileName;
+	var a, b, c;
+	a = this.filesInDir;
+	a.do({|item, index| if(item.filename == fileName.asString, {b = index}) });
+	if(b.notNil, {c = a[b]});	
+	^c;
+	}
+	
+	findFileExtension {arg fileName;
+	var a, b;
+	a = this.findFullFileName(fileName);
+	b = "." ++ a.split($.)[1];	
+	^b;
+	}
+	
 	isStringNumber {
-	var bol;
-	bol = "1234567890".contains(this);
+	var bol, item;
+	item = this;
+	if(item.contains("."), {item = item.replace(".")});
+	bol = "1234567890".ascii.includesAll(item.ascii);
 	^bol;
 	}
 	
@@ -1582,6 +1118,33 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	b = function.copyRange(begin, end).replace("=", "/").replace(",", "/").replace(" ", "").split;
 	b = b.reject({|item, index| index.odd});
 	^b;
+	}
+
+	splitArgValsArr {
+	var begin, end, b, function;
+	function = this;
+	begin = function.find(" ")+1;
+	end = function.find(";")-1;
+	b = function.copyRange(begin, end).replace("=", "/").replace(",", "/").replace(" ", "").split;
+	b = b.reject({|item, index| index.even});
+	^b;
+	}
+	
+	filename {var name, arr, result;
+	name = this.basename;
+	arr = name.split($.);
+	if(arr.size > 1, { 
+	result = name.findReplace("." ++ arr[arr.size-1], "");
+	}, {
+	result = name;
+	});
+	^result;
+	}
+	
+	charPix {arg letterSize=12,lower=0.5,upper=0.75;
+		var a;
+		this.do{|item| if(item.isLower, {a = a.add(lower)}, {a = a.add(upper)})}
+		^(a.sum*letterSize)
 	}
 	
 	}
@@ -1603,13 +1166,67 @@ var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix
 	
 + Object {
 
-postlnbool {arg bool=true;
+	postlnbool {arg bool=true;
 	
 	if(bool, {
 	this.postln;
 	});
 	
 	}
+	
+	postbool {arg bool=true;
+	
+	if(bool, {
+	this.post;
+	});
+	
+	}
+	
+	getVarInfo {
+	var vars, vals;
+	this.getSlots.do({|item, index| 
+		if(index.even, {vars = vars.add(item)}, {vals = vals.add(item)});
+	});
+	^[vars,vals];		
+	}
+	
+	getVars {
+	var vars;
+	this.getSlots.do({|item, index| 
+		if(index.even, {vars = vars.add(item)});
+	});
+	^vars;		
+	}
+	
+	getVals {
+	var vals;
+	this.getSlots.do({|item, index| 
+		if(index.odd, {vals = vals.add(item)});
+	});
+	^vals;		
+	}
+	
+	getVarPairs {
+	var result;
+	result = this.getVarInfo.flop;	
+	^result;
+	}
+	
+	getValFromVar {arg instVar;
+	var arr, result;
+	arr = this.getVarInfo;
+	result = arr[1][arr[0].indexOf(instVar)];
+	^result;	
+	}
+	
+	pushSlots {arg array;
+	var count=0;
+	array.pairsDo {|key, value|
+	this.slotPut(count, value);
+	count = count+1;
+	}
+	}
+	
 }
 
 
@@ -1628,80 +1245,628 @@ postlnbool {arg bool=true;
 
 	}
 	
++ SoundFile {
+
+	*numFrames {arg pathName;
+	var file, number;
+	file = this.new;
+	file.openRead(pathName);
+	number = file.numFrames;
+	file.close;
+	^number;
+	}
+	
+	*duration {arg pathName;
+	var file, number;
+	file = this.new;
+	file.openRead(pathName);
+	number = file.duration;
+	file.close;
+	^number;
+	}
+	
+}
+
 + Segmentation {
 
-writeFiles {var step=0, path, file, array, array2, name, start, end, newFile;
+	writeFiles {var step=0, path, file, array, array2, name, start, end, newFile;
+	
+	Routine({
+	path = filename;
+	file = SoundFile.new;
+	file.openRead(path);
+	array = FloatArray.newClear(file.numFrames * file.numChannels);
+	(file.numFrames/44100/1000).yield;
+	file.readData(array);
+	"loading...".postln;
+	(file.numFrames/44100/50).yield;
+	name = filename.basename.copyRange(0,filename.basename.size-5).split($ )[0];
+	("mkdir " ++ filename.dirname ++"/" ++ name ++ "cut").unixCmd;
+	".".postln;
+	0.1.yield;
+	
+	outputarray.size.do({
+	start = outputarray[step][0];
+	end = (outputarray[step][0]+(outputarray[step][1]*44100).round(1));
+	array2 = array.copyRange(start.asInteger, end.asInteger);
+	0.01.yield;
+	newFile=SoundFile.new.headerFormat_("WAV").sampleFormat_("int16").numChannels_(file.numChannels);
+	0.01.yield;
+	newFile.openWrite(((filename.dirname)++"/" ++ name ++ "cut/" ++step++".wav").postln);
+	0.01.yield;
+	newFile.writeData(array2); 
+	0.01.yield;
+	newFile.close;
+	step = step + 1;
+	});
+	file.close;
+	"done".postln;
+	}).play
+	}
+	
+	writeCutFiles {var step=0, path, file, array, array2, name, start, end, newFile;
+	
+	Routine({
+	path = filename;
+	file = SoundFile.new;
+	file.openRead(path);
+	array = FloatArray.newClear(file.numFrames * file.numChannels);
+	(file.numFrames/44100/1000).yield;
+	file.readData(array);
+	"loading...".postln;
+	(file.numFrames/44100/50).yield;
+	name = filename.basename.copyRange(0,filename.basename.size-5).split($ )[0];
+	("mkdir " ++ filename.dirname ++"/" ++ name ++ "cut").unixCmd;
+	".".postln;
+	0.1.yield;
+	
+	outputarray.size.do({
+	start = outputarray[step][0];
+	if(outputarray[step] != outputarray.last, {
+	end = outputarray[step+1][0];
+	}, {
+	end = (outputarray[step][0]+(outputarray[step][1]*44100).round(1));
+	});
+	array2 = array.copyRange(start.asInteger, end.asInteger);
+	0.01.yield;
+	newFile=SoundFile.new.headerFormat_("WAV").sampleFormat_("int16").numChannels_(file.numChannels);
+	0.01.yield;
+	newFile.openWrite(((filename.dirname)++"/" ++ name ++ "cut/" ++step++".wav").postln);
+	0.01.yield;
+	newFile.writeData(array2); 
+	0.01.yield;
+	newFile.close;
+	step = step + 1;
+	});
+	file.close;
+	"done".postln;
+	}).play
+	}
 
-Routine({
-path = filename;
-file = SoundFile.new;
-file.openRead(path);
-array = FloatArray.newClear(file.numFrames * file.numChannels);
-(file.numFrames/44100/1000).yield;
-file.readData(array);
-"loading...".postln;
-(file.numFrames/44100/50).yield;
-name = filename.basename.copyRange(0,filename.basename.size-5).split($ )[0];
-("mkdir " ++ filename.dirname ++"/" ++ name ++ "cut").unixCmd;
-".".postln;
-0.1.yield;
-
-outputarray.size.do({
-start = outputarray[step][0];
-end = (outputarray[step][0]+(outputarray[step][1]*44100).round(1));
-array2 = array.copyRange(start.asInteger, end.asInteger);
-0.01.yield;
-newFile = SoundFile.new.headerFormat_("WAV").sampleFormat_("int16").numChannels_(file.numChannels);
-0.01.yield;
-newFile.openWrite(((filename.dirname)++"/" ++ name ++ "cut/" ++step++".wav").postln);
-0.01.yield;
-newFile.writeData(array2); 
-0.01.yield;
-newFile.close;
-step = step + 1;
-});
-file.close;
-"done".postln;
-}).play
 }
 
-writeCutFiles {var step=0, path, file, array, array2, name, start, end, newFile;
+//extensions to wslib
 
-Routine({
-path = filename;
-file = SoundFile.new;
-file.openRead(path);
-array = FloatArray.newClear(file.numFrames * file.numChannels);
-(file.numFrames/44100/1000).yield;
-file.readData(array);
-"loading...".postln;
-(file.numFrames/44100/50).yield;
-name = filename.basename.copyRange(0,filename.basename.size-5).split($ )[0];
-("mkdir " ++ filename.dirname ++"/" ++ name ++ "cut").unixCmd;
-".".postln;
-0.1.yield;
-
-outputarray.size.do({
-start = outputarray[step][0];
-if(outputarray[step] != outputarray.last, {
-end = outputarray[step+1][0];
-}, {
-end = (outputarray[step][0]+(outputarray[step][1]*44100).round(1));
-});
-array2 = array.copyRange(start.asInteger, end.asInteger);
-0.01.yield;
-newFile = SoundFile.new.headerFormat_("WAV").sampleFormat_("int16").numChannels_(file.numChannels);
-0.01.yield;
-newFile.openWrite(((filename.dirname)++"/" ++ name ++ "cut/" ++step++".wav").postln);
-0.01.yield;
-newFile.writeData(array2); 
-0.01.yield;
-newFile.close;
-step = step + 1;
-});
-file.close;
-"done".postln;
-}).play
-}
-
-}
+//+ SimpleMIDIFile {
+//
+//	trackSilence {arg track=1, thresh=0;
+//	var timeOnTrk, timeOffTrk, b,c,d,e, f, removeOff, arr, removeOffArr;
+//	
+//	arr = this.midiEvents.flop[1].indexOfAll(this.endOfTrack.flop[1]);
+//	if(arr.includes(0), {arr.remove(0);});
+//	arr = arr.rejectNil;
+//	
+//	if(this.midiEvents.itemsAt(arr).notNil, {
+//	this.midiEvents.removeAll(this.midiEvents.itemsAt(arr));
+//	});
+//	
+//	removeOff = this.midiEvents.flop[2].findAll([\noteOff, \noteOff]);
+//
+//	if(removeOff.notNil, {
+//	removeOffArr = this.midiEvents.itemsAt(removeOff);
+//	this.midiEvents.removeAll(removeOffArr);
+//	});
+//	
+//	timeOnTrk = this.midiTrackTypeEvents(track, \noteOn).flop[1]; //get times for noteOn events in track
+//	timeOffTrk = this.midiTrackTypeEvents(track, \noteOff).flop[1]; //get times for noteOff events in track
+//	
+//	b = timeOffTrk.collectDiff(timeOnTrk); //difference between timeOffTrk and timeOnTrk
+//
+//	d = (timeOnTrk ++ this.endOfTrack(track).flat[1]); //add endoftrack to noteOn
+//
+//	c = d.roundUpList(b); //looks for closest item after noteOff
+//
+//	e = [b, c].flop; //pairs of noteOff and noteOn for silence
+//	
+//	e.do{|item| 
+//	if(item[1] - item[0] > thresh, {
+//	f = f.add(item);
+//	});
+//	}; //time threshold, ignores silences smaller than the threshold
+//
+//	if(timeOnTrk[0] != 0, {f = [[0, timeOnTrk[0]]] ++ f}); //if first noteOn is not 0, then add silence
+//	
+//	^f;
+//
+//	}
+//	
+//	phraseStructure {arg numTracks=4, gridScale=2.6, sysPage=4, color=\color, winSize=\small, thresh=0;
+//var w, rect, squareWidth, squareHeight, trackDiv, trackWidth, trackHeight, toPix, patTrack, trackPos, busyOrder, pat, newPix, thisPix, colorArr, track1Pix, pixLimit, screenArr, lenghPix, toSecs, amountWin, secsPage, nameNum, fileName, lastFunc, endofThisTrack, inWhichRow, thisLine;
+//
+//		if(winSize == \fullScreen, {
+//			screenArr =  SCWindow.screenBounds.asArray;
+//			rect = Rect(screenArr[0],screenArr[1]+20, screenArr[2], screenArr[3]-40);
+//			}, {
+//			rect = Rect(128, 64, 400, 400);
+//		});
+//		
+//		squareWidth = (rect.width-40);
+//		squareHeight =(rect.height-40);
+//		trackDiv = numTracks * sysPage;
+//		trackWidth = squareWidth / trackDiv;
+//		trackHeight = squareHeight / trackDiv;
+//		toPix = trackWidth / gridScale;
+//		
+//		lenghPix = this.length * toPix;
+//		amountWin = (lenghPix / (squareWidth*sysPage)).roundUp(1);
+//		toSecs = gridScale / trackWidth;
+//		secsPage = (squareWidth*sysPage) * toSecs;
+//
+//		"amount of pages: ".post; amountWin.postln;
+//		"amount of time per page: ".post; secsPage.postln;
+//		
+//		nameNum = this.pathName.findAll("/").maxItem + 1;
+//		fileName = this.pathName.copyRange(nameNum, this.pathName.size-1);
+//
+//		
+//		w = SCWindow(fileName, rect).front;
+//		w.view.background_(Color.white);
+//		w.drawHook = {var step=0, trackStep=0;
+//
+//		
+//		patTrack = Pseq([0,1,2,3,2,1], inf).asStream; //pattern for coloring tracks
+//
+//			//grid
+//			trackDiv.do{
+//				// set the Color
+//				Pen.color = Color.grey;
+//				Pen.addRect(
+//					Rect(20, 20+(step*trackHeight), squareWidth, (rect.height-(40+(step*trackHeight))))
+//				);
+//				Pen.perform(\stroke);
+//				step  = step + 1;
+//				
+//			};
+//			step=0;
+//			trackDiv.do{
+//				// set the Color
+//				Pen.color = Color.grey;
+//				Pen.addRect(
+//					Rect(20+(step*trackWidth), 20, (rect.width-(40+(step*trackWidth))), squareHeight)
+//				);
+//				Pen.perform(\stroke);
+//				step  = step + 1;
+//				
+//			};
+//			//function for ending
+//			lastFunc = {arg barStart, barEnd, whereBar, position;
+//			Pen.width = 1.5;
+//			Pen.color = Color.white;		
+//			Pen.addRect(
+//			Rect(20+barStart, 20+(trackHeight*(whereBar*numTracks+position)), barEnd, trackHeight)
+//			);
+//			Pen.perform([\stroke]);
+//			Pen.color = Color.white;		
+//			Pen.addRect(
+//			Rect(20+barStart, 20+(trackHeight*(whereBar*numTracks+position)), barEnd, trackHeight)
+//			);
+//			Pen.perform([\fill]);
+//			 };
+//			 
+//			//info
+//			trackPos=1;
+//			numTracks.do{
+//			track1Pix = (this.trackSilence(trackPos, thresh).flat * toPix);
+//			newPix = track1Pix.recursiveClip(squareWidth);
+//			//for different colors (change this for more tracks)
+//			busyOrder = [0,0,0,0.6];
+//			busyOrder.put(patTrack.next, rrand(0.8, 0.5));
+//			if(color == \color, {
+//			pat = Pseq([busyOrder, [0,0,0,0.2]], inf).asStream;
+//			} , {
+//			pat = Pseq([[0,0,0,0.0], [0,0,0,0.6]], inf).asStream;
+//			});
+//			trackStep=0;
+//
+//			sysPage.do({
+//			step=0;
+//			thisPix = newPix[trackStep] ++ [squareWidth];
+//			thisPix.do({ 
+//			pixLimit = thisPix.pairsInArray[step].differentiate;
+//				// set the Color
+//				colorArr = pat.next;
+//				if(colorArr.notNil, {
+//				Pen.color = Color.new(colorArr[0], colorArr[1], colorArr[2], colorArr[3]);
+//				});
+//				//Pen.color = Color.green(colorArr[0],colorArr[1]);
+//				Pen.addRect(
+//					Rect(20+pixLimit[0], 20+(trackHeight*((trackPos+(trackStep*numTracks))-1)), pixLimit[1], trackHeight)
+//				);
+//				Pen.perform([\fill]);
+//				step  = step + 1;
+//				
+//			
+//			 });
+//
+//			 trackStep = trackStep + 1;
+//			 pat.next;
+//			 });
+//			 
+//			//ending
+//			endofThisTrack = this.endOfTrack(trackPos).flat[1] * toPix;
+//			inWhichRow = [(endofThisTrack)].recursiveClip(squareWidth); //find out rows
+//			step = 0;
+//			numTracks.do({
+//			thisLine = inWhichRow[step];
+//			if(thisLine.notNil, {
+//			if(thisLine.notEmpty, {
+//			lastFunc.value(thisLine[0], squareWidth-thisLine[0], step, (trackPos-1));
+//			});
+//			}, {
+//			lastFunc.value(0, squareWidth, step, (trackPos-1));
+//			});
+//			step = step + 1;
+//			});
+//			
+//			trackPos = trackPos + 1;
+//			 
+//		};	
+//		
+//		
+//		
+//		};
+//		
+//		w.refresh;
+//
+//	}
+//	
+//	trackArrMIDIEvents {
+//	^midiEvents.flop[0].rejectSame;
+//	}
+//	
+//	trackArrMetaEvents {
+//	^metaEvents.flop[0].rejectSame;
+//	}
+//	
+//	equalCutArray {arg cut;
+//	var arr;
+//	arr = (cut, cut*2.. midiEvents.flop[1].maxItem) ++ midiEvents.flop[1].maxItem;
+//	^arr;
+//	}
+//	
+//	eggCut {arg arr, tracksMIDI, otherPath;
+//	var globArrMIDI, globArrMeta, noteTypeArr, ccArr, programArr, trackName, timeSignature, tempo, copyRight, keySignature, whichCut, lowLimit, highLimit, groupMIDI, initTracks, firstTracks, finishNote, groupMeta, groupMIDI2, groupMeta2 , newPath, cc, noteType, program; 
+//	
+//	//if other path is nil then ignore, otherwise make new path
+//	if(otherPath.notNil, {pathName = otherPath});
+//	
+//	//groups midi events in different cuts
+//	globArrMIDI = []; 
+//	midiEvents.do({|item|
+//	var group;
+//	group = (arr.indexInBetween(item[1]).roundUp(1));
+//	globArrMIDI = globArrMIDI.add([group, item]);
+//	});
+//	
+//	//groups meta events in different cuts
+//	globArrMeta = [];
+//	metaEvents.do({|item|
+//	var group;
+//	group = (arr.indexInBetween(item[1]).roundUp(1)); 
+//	globArrMeta = globArrMeta.add([group, item]);
+//	});
+//	
+//	noteTypeArr = [];
+//	ccArr = [];
+//	programArr = [];
+//	trackName = [];
+//	timeSignature = nil; //quitar esto para hacer la clase
+//	tempo = nil;
+//	copyRight = nil;
+//	keySignature = nil;
+//	
+//	//loop starts
+//	//midiEvents:
+//	//finds low and high limits for each group
+//	whichCut = 0;
+//	
+//	arr.do{
+//	
+//	lowLimit = if(arr[whichCut-1].notNil, {lowLimit = arr[whichCut-1]}, {lowLimit = 0});
+//	highLimit = arr[whichCut];
+//	
+//	groupMIDI = [];
+//	globArrMIDI.do({|item| 
+//		if(item[0] == whichCut, {
+//			groupMIDI = groupMIDI.add([item[1][0],item[1][1]-lowLimit,item[1][2], item[1][3], item[1][4], item[1][5]] )}); }); //acces midiEvents for each group
+//	
+//	midiEvents = groupMIDI; //new midiEvents to SimpleMIDIFile
+//	
+//	initTracks = [];
+//	tracksMIDI.do({|tracks|
+//	initTracks = initTracks.add(groupMIDI[groupMIDI.flop[0].indexOf(tracks)]);
+//	}); 
+//	
+//	firstTracks = [];
+//	initTracks.do({|item|
+//		if(item[2] == \noteOff, {
+//		firstTracks = firstTracks.add([item[0], 0, \noteOn, item[3], item[4], item[5]]);
+//		}); //inserts noteOns if the first midiEvent is a noteOff
+//	});
+//	
+//	if(firstTracks.notEmpty, {
+//	this.addAllMIDIEvents(firstTracks);
+//	groupMIDI = groupMIDI.add(firstTracks)
+//	}); //adds first noteOns in tracks if there are any
+//	
+//	if(ccArr.notEmpty, {
+//	this.addAllMIDIEvents(ccArr);
+//	groupMIDI = groupMIDI.add(ccArr);
+//	}); //adds ccs is any
+//	
+//	if(programArr.notEmpty, {
+//	this.addAllMIDIEvents(programArr);
+//	groupMIDI = groupMIDI.add(programArr);
+//	}); //adds program if any
+//	
+//	//goes individually from track to track finding out last noteType, cc and program
+//	noteTypeArr = [];
+//	ccArr = [];
+//	programArr = [];
+//	
+//	tracksMIDI.do({|track|
+//	groupMIDI.do({|item|
+//	if(item[0] == track, { item;
+//	case
+//		{(item[2] == \noteOn).or(item[2] == \noteOff)} {noteType = item;}
+//		{item[2] == \cc} {cc = item;}
+//		{item[2] == \program} {program = item;}
+//		})
+//	});
+//	noteTypeArr = noteTypeArr.add(noteType);
+//	ccArr = ccArr.add(cc);
+//	programArr = programArr.add(program);
+//	
+//	});
+//	
+//	noteTypeArr = noteTypeArr.rejectNil;
+//	//adds note off is last midiEven found is a noteOn
+//	finishNote = [];
+//	noteTypeArr.do({|item| 
+//		if(item[2] == \noteOn, {
+//			finishNote = finishNote.add([item[0], (highLimit-lowLimit), \noteOff, item[3], item[4], item[5]]);
+//		});
+//	});
+//	
+//	this.addAllMIDIEvents(finishNote); //add ending to not ons
+//	
+//	//metaEvents:
+//	
+//	groupMeta = [];
+//	globArrMeta.do({|item| 
+//		if(item[0] == whichCut, {
+//			groupMeta = groupMeta.add([item[1][0],item[1][1]-lowLimit,item[1][2], item[1][3], item[1][4], item[1][5]] 
+//		)}); 
+//	}); //acces midiEvents for each group
+//	
+//	metaEvents = groupMeta; //new midiEvents to SimpleMIDIFile
+//	
+//	if(copyRight.notNil, {
+//	copyRight.put(1,0);
+//	metaEvents = metaEvents.add(copyRight);
+//	});
+//	
+//	if(timeSignature.notNil, {
+//	timeSignature.put(1,0);
+//	metaEvents = metaEvents.add(timeSignature);
+//	});
+//	
+//	if(keySignature.notNil, {
+//	keySignature.put(1,0);
+//	metaEvents = metaEvents.add(keySignature);
+//	});
+//	
+//	if(tempo.notNil, {
+//	tempo.put(1,0);
+//	metaEvents = metaEvents.add(tempo);
+//	});
+//	
+//	if(trackName.notEmpty, {
+//	trackName.do({|item| item.put(1,0);
+//	metaEvents = metaEvents.add(item);
+//	});
+//	});
+//	
+//	//goes individually from track to track finding out last noteType, cc and program
+//	//trackName = [];
+//	groupMeta.do({|item|
+//			case
+//			{item[2] == \copyright} {copyRight = item;}
+//			{item[2] == \timeSignature} {timeSignature = item }
+//			{item[2] == \keySignature} {keySignature = item }
+//			{item[2] == \tempo} {tempo = item }
+//			{item[2] == \trackName} {trackName = trackName.add(item) }
+//	});
+//	
+//	
+//	groupMIDI2 = [];
+//	midiEvents.do({|item| groupMIDI2 = groupMIDI2.add(item.rejectNil)});
+//	midiEvents = groupMIDI2;
+//	
+//	groupMeta2 = [];
+//	metaEvents.do({|item| groupMeta2 = groupMeta2.add(item.rejectNil)});
+//	metaEvents = groupMeta2;
+//	
+//	this.sortMetaEvents;
+//	 
+//	newPath = pathName.copyRange(0, pathName.size-5) ++ "_" ++ (whichCut+1).asString ++ ".mid";
+//	
+//	this.write( newPath ); //write new MIDIfile with information
+//	
+//	whichCut = whichCut + 1;
+//
+//	}
+//
+//	}
+//
+//	getStartIndex {arg track, type=\noteOn, newTime, adjTempo;
+//	var trackInfo, times, times2, step;
+//	trackInfo = this.midiTrackTypeEvents(track, type);
+//	times = trackInfo.flop[1]; //get times for routine
+//	times2 = times*adjTempo; //get times with adjust tempo
+//	step = (times2.indexInBetween(newTime).roundUp).asInteger;
+//	^step
+//	}
+//
+//	playTrackType {arg track, type=\noteOn, function = {arg chan, note, vel; [chan,note,vel].postln}, newTime = 0, adjTempo=1;
+//	var trackInfo, times, times2, lock, step, wait;
+//	//gets track info for midiFile
+//	if(this.timeMode != \seconds, {this.timeMode = \seconds});
+//	trackInfo = this.midiTrackTypeEvents(track, type);
+//	times = trackInfo.flop[1]; //get times for routine
+//	times2 = times*adjTempo; //get times with adjust tempo
+//	step = (times2.indexInBetween(newTime).roundUp).asInteger;
+//	wait = (times2[step] - newTime);
+//	if(wait == 0, {lock = 0}, {lock = 1}); //if wait is not 0, then ignore first yield 
+//	//routine
+//	Routine({
+//	wait.yield; //initial wait time
+//	trackInfo.size.do({
+//	if(lock == 0, {
+//	(times.differentiate[step]*adjTempo).yield;
+//	});
+//	lock = 0;
+//	function.value(trackInfo.flop[3][step], trackInfo.flop[4][step], trackInfo.flop[5][step]);
+//	//trackInfo[step].postln;
+//	step = step + 1;
+//	})}).play;
+//	
+//	}
+//	
+//	noteSustain {var arr;
+//	if(this.timeMode != \seconds, {this.timeMode = \seconds});
+//	arr = this.noteSustainEvents.collect({|item| [ item[0], item[1], item[4], item[5], item[6] ];});
+//	arr.sort({ arg a, b; b[1] >= a[1] });
+//	^arr;
+//	}
+//
+//
+//	playSustain {arg function = {arg track, note, vel, dur; [track,note,vel,dur].postln}, newTime = 0, adjTempo=1;
+//	var sustainInfo, times, times2, lock, step, wait;
+//
+//	sustainInfo = this.noteSustain;
+//	times = sustainInfo.flop[1]; //get times for routine
+//	times2 = times*adjTempo; //get times with adjust tempo
+//	step = (times2.indexOfEqualGreaterThan(newTime)).asInteger;
+//	wait = (times2[step] - newTime);
+//	if(wait == 0, {lock = 0}, {lock = 1}); //if wait is not 0, then ignore first yield 
+//	//routine
+//	Routine({
+//	wait.yield; //initial wait time
+//	sustainInfo.size.do({
+//	if(lock == 0, {
+//	(times.differentiate[step]*adjTempo).yield;
+//	});
+//	lock = 0;
+//	function.value(sustainInfo.flop[0][step], sustainInfo.flop[2][step], sustainInfo.flop[3][step], sustainInfo.flop[4][step]);
+//	//trackInfo[step].postln;
+//	step = step + 1;
+//	})}).play;
+//
+//}
+//
+//	
+//	sectionPlay {arg track, function = {arg val; val.postln}, newTime = 0, adjTempo=1;
+//	var times, section, lock, step, step2=0;
+//	if(this.timeMode != \seconds, {this.timeMode = \seconds}); //make sure it's seconds
+//	
+//	times = this.trackSilence(track).flat*adjTempo; //get silence times for routine
+//	step = (times.indexInBetween(newTime).roundUp).asInteger; //get steps
+//	times = times-newTime; //get new arr taking newTime in consideration
+//	times = times.reject({|item| item.isNegative }); //get rid of negative numbers
+//	
+//	section = step + 1; //sections start in 1
+//	//routine
+//	Routine({
+//
+//	times.size.do({
+//	function.value(section);
+//	
+//	(times.differentiate[step2]).yield;
+//	
+//	step = step + 1;
+//	section = step + 1;
+//	step2 = step2 + 1;
+//	})}).play;
+//	
+//	}
+//
+//	phrasePlay {arg track, func= {arg sec; sec.postln;}, funcSilence = {arg silence; silence.postln;}, newTime=0, adjTempo=1;
+//	this.sectionPlay(track, {arg val;
+//	var section, silence;
+//	"Track".post; track.post;
+//	if(val.odd, {" : Play: section: ".post;
+//	//this is the sections starting with 1 (for better order);
+//	section = val+1/2;
+//	//specific info
+//	func.value(section);
+//	}, {
+//	" : Silence: ".post;
+//	silence = val/2;
+//	funcSilence.value(silence);
+//	}); 
+//	}, 
+//	newTime, //this is the new step 
+//	adjTempo);
+//
+//	}
+//
+//	noteValues {arg track=1;
+//	var timeOnTrk, timeOffTrk, noteValue;
+//	  
+//	timeOnTrk = this.midiTrackTypeEvents(track, \noteOn); //get times for noteOn events in track
+//	timeOffTrk = this.midiTrackTypeEvents(track, \noteOff); //get times for noteOff events in track
+//	
+//	noteValue = [];
+//	timeOnTrk.do({|item|
+//	var array, type, note, time, noteOffArr;
+//	array = item;
+//	type = array[2];
+//	note = array[4];
+//	time = array[1];
+//	
+//	noteOffArr = [];
+//	timeOffTrk.do({|item| if((item[2] == \noteOff).and(item[4] == note).and(item[1] > time), {noteOffArr = noteOffArr.add(item)}); });
+//	if(noteOffArr.notEmpty, {
+//	noteValue = noteValue.add(noteOffArr[0][1]-time);
+//	});
+//	});
+//	
+//	^noteValue;
+//
+//	}
+//
+//	playTrackNotes {arg track=1, duration, function = {arg chan, note, vel, dur; [chan,note,vel,dur].postln}, newTime=0, adjTempo=1;
+//	var trackInfo, times, step;
+//	if(this.timeMode != \seconds, {this.timeMode = \seconds});
+//	trackInfo = this.midiTrackTypeEvents(track, \noteOn);
+//	times = trackInfo.flop[1]*adjTempo; //get times for routine
+//	"index start: ".post;
+//	step = (times.indexInBetween(newTime).roundUp).asInteger.postln;
+//	this.playTrackType(track, \noteOn, {arg chan,note,vel,dur; 
+//	function.value(chan,note,vel,duration[step]);
+//	step = step + 1;
+//	}, newTime, adjTempo);
+//	}
+//
+//}
