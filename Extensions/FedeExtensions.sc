@@ -953,6 +953,10 @@
 
 + Server {
 	
+	bootAndMIDI {
+	this.waitForBoot({MIDIIn.connectAll;});	
+	}
+	
 	bufFreeRange{arg lo=0, hi=10, time=0.001;
 	var total, counter;
 	total = hi-lo;
