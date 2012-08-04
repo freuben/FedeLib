@@ -164,7 +164,7 @@ fontArr.do({|item, index|
         };
        w.refresh;
 
-}
+	}
 
 	draw2 {arg funcArray, color=\black;
      	var arryFunc;
@@ -181,7 +181,7 @@ fontArr.do({|item, index|
         };
        w.refresh; 
 
-}
+	}
 
 	newScore {arg arrayClef = [\treble], adjDown=2, adjStaffGap=1.2, adjSpacing = 1;
 	windowType = 0;
@@ -295,122 +295,122 @@ fontArr.do({|item, index|
     }
     
     findChromatic {arg array = [[0, [1, 0, "c#4", 0]], [0, [0, 0, "c#5", 1]], [1, [0, 0, "e6", 0]]]; //[pos, [staff, noteType, noteName, color]]
-var count, newArray, pos, staff, noteType, noteName, color, white, midiNote, noteClass, octave, oct, note, acc, col;
-count = 0;
-newArray = [];
-
-array.size.do({
-pos = array[count][0];
-staff = array[count][1][0];
-noteType = array[count][1][1];
-noteName = array[count][1][2];
-color = array[count][1][3];
-
-case
-{color == \black} {col = 0}
-{color == \blue} {col = 1}
-{color == \red} {col = 2}
-{color == nil} {col = 0};
-
-case
-{storeArrayClef[staff] == \treble} {
-white = [0,2,4,5,7,9,11];
-midiNote = noteName.cnotemidi;
-noteClass = midiNote.midinoteclass;
-octave = midiNote.midioctave;
-oct = 0;
-if(white.includes(noteClass), {note = white.indexOf(noteClass); acc = 3;
-	}, {acc = 1; note = white.indexOf(noteClass-1);});
-note = note + ((octave-4)*7);
-}
-{storeArrayClef[staff] == \bass} {
-white = [0,1,3,5,7,8,10];
-midiNote = noteName.cnotemidi;
-noteClass = midiNote.midinoteclass-4;
-octave = midiNote.midioctave+2;
-if(noteClass < 0, {noteClass = 12+noteClass; octave = octave-1});
-oct = 0;
-if(white.includes(noteClass), {note = white.indexOf(noteClass); acc = 3;
-	}, {acc = 1; note = white.indexOf(noteClass-1);});
-note = note + ((octave-4)*7);
-};
-
-//still to add Alto and Tenor
-
-case
-{(note > 18).and(note <= 24)} {note = note - 7; oct = 1}
-{note > 25} {note  = note - 14; oct = 3}
-{(note < -6).and(note >= -12)} {note = note + 7; oct = 2}
-{note < -13} {note = note + 14; oct = 4};
-
-newArray = newArray.add([pos, [staff, noteType, note, acc, oct, col]]); //[pos, [staff, noteType, note, acc, oct, color]];
-count = count + 1;
-});
-
-this.findNotes(newArray);
-}
+	var count, newArray, pos, staff, noteType, noteName, color, white, midiNote, noteClass, octave, oct, note, acc, col;
+	count = 0;
+	newArray = [];
+	
+	array.size.do({
+	pos = array[count][0];
+	staff = array[count][1][0];
+	noteType = array[count][1][1];
+	noteName = array[count][1][2];
+	color = array[count][1][3];
+	
+	case
+	{color == \black} {col = 0}
+	{color == \blue} {col = 1}
+	{color == \red} {col = 2}
+	{color == nil} {col = 0};
+	
+	case
+	{storeArrayClef[staff] == \treble} {
+	white = [0,2,4,5,7,9,11];
+	midiNote = noteName.cnotemidi;
+	noteClass = midiNote.midinoteclass;
+	octave = midiNote.midioctave;
+	oct = 0;
+	if(white.includes(noteClass), {note = white.indexOf(noteClass); acc = 3;
+		}, {acc = 1; note = white.indexOf(noteClass-1);});
+	note = note + ((octave-4)*7);
+	}
+	{storeArrayClef[staff] == \bass} {
+	white = [0,1,3,5,7,8,10];
+	midiNote = noteName.cnotemidi;
+	noteClass = midiNote.midinoteclass-4;
+	octave = midiNote.midioctave+2;
+	if(noteClass < 0, {noteClass = 12+noteClass; octave = octave-1});
+	oct = 0;
+	if(white.includes(noteClass), {note = white.indexOf(noteClass); acc = 3;
+		}, {acc = 1; note = white.indexOf(noteClass-1);});
+	note = note + ((octave-4)*7);
+	};
+	
+	//still to add Alto and Tenor
+	
+	case
+	{(note > 18).and(note <= 24)} {note = note - 7; oct = 1}
+	{note > 25} {note  = note - 14; oct = 3}
+	{(note < -6).and(note >= -12)} {note = note + 7; oct = 2}
+	{note < -13} {note = note + 14; oct = 4};
+	
+	newArray = newArray.add([pos, [staff, noteType, note, acc, oct, col]]); //[pos, [staff, noteType, note, acc, oct, color]];
+	count = count + 1;
+	});
+	
+	this.findNotes(newArray);
+	}
 
 	findEnharmonic {arg array = [[0, [1, 0, "c4", \sharp, \black]], [0, [0, 0, "c5", \flat, \black]], [1, [0, 0, "e6", \nat, \black]]]; //[pos, [staff, noteType, noteName, accidental, color]]
-var count, newArray, pos, staff, noteType, noteName, color, white, midiNote, noteClass, octave, oct, note, acc, accidental, col;
-count = 0;
-newArray = [];
-
-array.size.do({
-pos = array[count][0];
-staff = array[count][1][0];
-noteType = array[count][1][1];
-noteName = array[count][1][2];
-accidental = array[count][1][3];
-color = array[count][1][4];
-
-case
-{accidental == \empty} {acc = 0}
-{accidental == \sharp} {acc = 1}
-{accidental == \flat} {acc = 2}
-{accidental == \nat} {acc = 3}
-{accidental == nil} {acc = 0};
-
-case
-{color == \black} {col = 0}
-{color == \blue} {col = 1}
-{color == \red} {col = 2}
-{color == nil} {col = 0};
-
-case
-{storeArrayClef[staff] == \treble} {
-white = [0,2,4,5,7,9,11];
-midiNote = noteName.cnotemidi;
-noteClass = midiNote.midinoteclass;
-octave = midiNote.midioctave;
-oct = 0;
-if(white.includes(noteClass), {note = white.indexOf(noteClass); 
-	}, { note = white.indexOf(noteClass-1);});
-note = note + ((octave-4)*7);
-}
-{storeArrayClef[staff] == \bass} {
-white = [0,1,3,5,7,8,10];
-midiNote = noteName.cnotemidi;
-noteClass = midiNote.midinoteclass-4;
-octave = midiNote.midioctave+2;
-if(noteClass < 0, {noteClass = 12+noteClass; octave = octave-1});
-oct = 0;
-if(white.includes(noteClass), {note = white.indexOf(noteClass); 
-	}, { note = white.indexOf(noteClass-1);});
-note = note + ((octave-4)*7);
-};
-
-case
-{(note > 18).and(note <= 24)} {note = note - 7; oct = 1}
-{note > 25} {note = note - 14; oct = 3}
-{(note < -6).and(note >= -12)} {note = note + 7; oct = 2}
-{note < -13} {note = note + 14; oct = 4};
-
-newArray = newArray.add([pos, [staff, noteType, note, acc, oct, col]]); //[pos, [staff, noteType, note, acc, oct, color]];
-count = count + 1;
-});
-
-this.findNotes(newArray);
-}
+	var count, newArray, pos, staff, noteType, noteName, color, white, midiNote, noteClass, octave, oct, note, acc, accidental, col;
+	count = 0;
+	newArray = [];
+	
+	array.size.do({
+	pos = array[count][0];
+	staff = array[count][1][0];
+	noteType = array[count][1][1];
+	noteName = array[count][1][2];
+	accidental = array[count][1][3];
+	color = array[count][1][4];
+	
+	case
+	{accidental == \empty} {acc = 0}
+	{accidental == \sharp} {acc = 1}
+	{accidental == \flat} {acc = 2}
+	{accidental == \nat} {acc = 3}
+	{accidental == nil} {acc = 0};
+	
+	case
+	{color == \black} {col = 0}
+	{color == \blue} {col = 1}
+	{color == \red} {col = 2}
+	{color == nil} {col = 0};
+	
+	case
+	{storeArrayClef[staff] == \treble} {
+	white = [0,2,4,5,7,9,11];
+	midiNote = noteName.cnotemidi;
+	noteClass = midiNote.midinoteclass;
+	octave = midiNote.midioctave;
+	oct = 0;
+	if(white.includes(noteClass), {note = white.indexOf(noteClass); 
+		}, { note = white.indexOf(noteClass-1);});
+	note = note + ((octave-4)*7);
+	}
+	{storeArrayClef[staff] == \bass} {
+	white = [0,1,3,5,7,8,10];
+	midiNote = noteName.cnotemidi;
+	noteClass = midiNote.midinoteclass-4;
+	octave = midiNote.midioctave+2;
+	if(noteClass < 0, {noteClass = 12+noteClass; octave = octave-1});
+	oct = 0;
+	if(white.includes(noteClass), {note = white.indexOf(noteClass); 
+		}, { note = white.indexOf(noteClass-1);});
+	note = note + ((octave-4)*7);
+	};
+	
+	case
+	{(note > 18).and(note <= 24)} {note = note - 7; oct = 1}
+	{note > 25} {note = note - 14; oct = 3}
+	{(note < -6).and(note >= -12)} {note = note + 7; oct = 2}
+	{note < -13} {note = note + 14; oct = 4};
+	
+	newArray = newArray.add([pos, [staff, noteType, note, acc, oct, col]]); //[pos, [staff, noteType, note, acc, oct, color]];
+	count = count + 1;
+	});
+	
+	this.findNotes(newArray);
+	}
 	
 	enharmonic {arg array = [[0, [1, 0, "c4", \sharp, \black]], [0, [0, 0, "c5", \flat, \black]], [1, [0, 0, "e6", \nat, \black]]];
 	var count, newArray, pos, staff, noteType, noteName, color, accidental, newStaff, adjStaff;
@@ -438,34 +438,34 @@ this.findNotes(newArray);
 
 	this.findEnharmonic(newArray);	
 	
-}
+	}
 
-	chromatic {arg array = [[0, [1, 0, "c#4", 0]], [0, [0, 0, "c#5", 1]], [1, [0, 0, "e6", 0]]]; //[pos, [staff, noteType, noteName, color]]
-var count, newArray, pos, staff, noteType, noteName, color, newStaff, adjStaff;
-count = 0;
-newArray = [];
-
-array.size.do({
-pos = array[count][0];
-staff = array[count][1][0];
-noteType = array[count][1][1];
-noteName = array[count][1][2];
-color = array[count][1][3];
-
-if(pianoArray[staff] == \piano, {
-	if(noteName.cnotemidi < 60, {newStaff = 1}, {newStaff = 0});
-	}, {newStaff = 0});
-
-	if(pianoArray[staff-1] != \piano, {adjStaff = (staff*1);}, {
-	adjStaff = (staff*2);});
-
-	newArray = newArray.add([pos, [newStaff+adjStaff, noteType, noteName, color]]);
-	count = count + 1; 
-});
-
-	this.findChromatic(newArray);	
+	chromatic {arg array = [[0, [1, 0, "c#4", 0]], [0, [0, 0, "c#5", 1]], [1, [0, 0, "e6", 0]]]; //	[pos, [staff, noteType, noteName, color]]
+	var count, newArray, pos, staff, noteType, noteName, color, newStaff, adjStaff;
+	count = 0;
+	newArray = [];
 	
-}
+	array.size.do({
+	pos = array[count][0];
+	staff = array[count][1][0];
+	noteType = array[count][1][1];
+	noteName = array[count][1][2];
+	color = array[count][1][3];
+	
+	if(pianoArray[staff] == \piano, {
+		if(noteName.cnotemidi < 60, {newStaff = 1}, {newStaff = 0});
+		}, {newStaff = 0});
+	
+		if(pianoArray[staff-1] != \piano, {adjStaff = (staff*1);}, {
+		adjStaff = (staff*2);});
+	
+		newArray = newArray.add([pos, [newStaff+adjStaff, noteType, noteName, color]]);
+		count = count + 1; 
+	});
+	
+		this.findChromatic(newArray);	
+		
+	}
 
 	clearStaff {
 	this.draw2;
@@ -506,319 +506,359 @@ if(pianoArray[staff] == \piano, {
     w.bounds_(Window.screenBounds);
     }
     
-noteOn { 
+	noteOn { 
 	synth.set(\gate, 1);
 	taskOn.reset;
      taskOn.play;
-}    
+	}    
       
-noteOff {
+	noteOff {
 	synth.set(\gate, 0);
 	taskOn.stop;
 	white1.value
-}
+	}
 
-noteEvent {arg dur=1.0, art=0.6, vol=1.0;
-var routine;
-this.setsynth(vol*0.1);
-routine = Routine({ 1.do({
-this.noteOn;
-(dur*art).yield;
-this.noteOff;
-(dur*(1.0-art)).yield;
-});
-}).play(clock);
-}
+	noteEvent {arg dur=1.0, art=0.6, vol=1.0;
+	var routine;
+	this.setsynth(vol*0.1);
+	routine = Routine({ 1.do({
+	this.noteOn;
+	(dur*art).yield;
+	this.noteOff;
+	(dur*(1.0-art)).yield;
+	});
+	}).play(clock);
+	}
 
-noteOn2 { 
+	noteOn2 { 
 	synth2.set(\gate, 1);
 	taskOn2.reset;
      taskOn2.play;
-}    
+	}    
       
-noteOff2 {
+	noteOff2 {
 	synth2.set(\gate, 0);
 	taskOn2.stop;
 	white2.value
-}
+	}
 
-noteEvent2 {arg dur=1.0, art=0.6, vol=1.0;
-var routine;
-this.setsynth2(vol*0.1);
-routine = Routine({1.do({
-this.noteOn2;
-(dur*art).yield;
-this.noteOff2;
-(dur*(1.0-art)).yield;
-});
-}).play(clock);
-}
+	noteEvent2 {arg dur=1.0, art=0.6, vol=1.0;
+	var routine;
+	this.setsynth2(vol*0.1);
+	routine = Routine({1.do({
+	this.noteOn2;
+	(dur*art).yield;
+	this.noteOff2;
+	(dur*(1.0-art)).yield;
+	});
+	}).play(clock);
+	}
 
-click1 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click1";
-if(w2.notNil, {w2.close});
- w2 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
-w2.view.background_( Color.white );
-white1 = { w2.drawFunc = {
-        Pen.color = Color.new255(238, 233, 233);
-        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
-         if(w2.notNil, {w2.refresh;});
-    }};
-clickColor1 = {arg alpha=1.0; w2.drawFunc = {
-        Pen.color = Color.new255(255, 255, 0).alpha_(alpha);
-        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
-       if(w2.notNil, { w2.refresh;});
-    }};   
-white1.value;  
-w2.front;
-if(w3.notNil, {w3.front});
-}
+	click1 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click1";
+	if(w2.notNil, {w2.close});
+	 w2 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
+	w2.view.background_( Color.white );
+	white1 = { 
+		if(w2.notNil, {
+			w2.drawFunc = {
+	        Pen.color = Color.new255(238, 233, 233);
+	        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
+			};
+	         w2.refresh;
+	         });
+	    };
+	clickColor1 = {arg alpha=1.0; 
+		if(w2.notNil, {
+		w2.drawFunc = {
+	        Pen.color = Color.new255(255, 255, 0).alpha_(alpha);
+	        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
+	    };
+	     w2.refresh;});
+	    };   
+	white1.value;  
+	w2.front;
+	if(w3.notNil, {w3.front});
+	}
 
-timer {arg newTime=10, clockAdj=1,winAdj = 0.8, winAdd = 20, rightWin=1;
-var timerWindow, oldTime, t, numBox;
-oldTime = newTime;
-if(timerWindow.notNil, {timerWindow.close});
- //timerWindow = Window( "Timer", Rect( w.bounds.asArray[2]-((205*rightWin)*resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (180*resize)*winAdj ), border: false).front;
- //timer goes left automatically
-timerWindow = Window( "Timer", Rect( w.bounds.asArray[2]-((205*rightWin)*resize) + (w.bounds.asArray[0]-(64)), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (180*resize)*winAdj ), border: false).front; 
-timerWindow.view.background_( Color.white );
-numBox = NumberBox(timerWindow, Rect( (30*resize)*winAdj, (30*resize)*winAdj, (200*resize)*winAdj, (110*resize)*winAdj));
-numBox.font_(Font("Helvetica", (100*resize)*winAdj));
-numBox.value = newTime;
-numBox.action = {arg field; field.value.postln; };
+	timer {arg newTime=10, clockAdj=1,winAdj = 0.8, winAdd = 20, rightWin=1;
+	var timerWindow, oldTime, t, numBox;
+	oldTime = newTime;
+	if(timerWindow.notNil, {timerWindow.close});
+	 //timerWindow = Window( "Timer", Rect( w.bounds.asArray[2]-((205*rightWin)*resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (180*resize)*winAdj ), border: false).front;
+	 //timer goes left automatically
+	timerWindow = Window( "Timer", Rect( w.bounds.asArray[2]-((205*rightWin)*resize) + (w.bounds.asArray[0]-(64)), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (180*resize)*winAdj ), border: false).front; 
+	timerWindow.view.background_( Color.white );
+	numBox = NumberBox(timerWindow, Rect( (30*resize)*winAdj, (30*resize)*winAdj, (200*resize)*winAdj, (110*resize)*winAdj));
+	numBox.font_(Font("Helvetica", (100*resize)*winAdj));
+	numBox.value = newTime;
+	numBox.action = {arg field; field.value.postln; };
+	
+	//w.front;
+	timerWindow.front;
+	if(w3.notNil, {w3.front});
+	t = Routine({ (newTime/0.1).do({oldTime = oldTime - 0.1; numBox.value_(oldTime.round(0.1));  (0.1*clockAdj).yield; });
+	(0.1*clockAdj).yield;
+	timerWindow.close;
+	}).play(clock);
+	
+	}
 
-//w.front;
-timerWindow.front;
-if(w3.notNil, {w3.front});
-t = Routine({ (newTime/0.1).do({oldTime = oldTime - 0.1; numBox.value_(oldTime.round(0.1));  (0.1*clockAdj).yield; });
-(0.1*clockAdj).yield;
-timerWindow.close;
-}).play(clock);
+	tag {arg string="Pedal",letterType="Helvetica", letterSize=60, widthAdj = 1, heightAdj = 0.1;
+	var tagBox,sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
+	if(tagWindow.notNil, {tagWindow.close});
+	sizeLetter = letterSize*resize;
+	textWidth = string.charPix(sizeLetter);
+	textHeight = sizeLetter*1.25;
+	textArr = w.bounds.asArray;
+	widthPos = (((textArr[2]-textWidth)/2)*widthAdj)+textArr[0];
+	heightPos = (((textArr[3]-textHeight)/2)*heightAdj)+textArr[1];
+	tagWindow = Window("Tag", Rect( widthPos, heightPos, textWidth, textHeight), border: false).front;
+	tagWindow.view.background_( Color.white );
+	tagBox = StaticText(tagWindow, Rect( 0, 0, textWidth, textHeight));
+	tagBox.font_(Font(letterType, sizeLetter)).string_(string).align_(\centered);
+	}
 
-}
+	tagClose {
+	if(tagWindow.notNil, {
+	tagWindow.close;
+	});
+	}
 
-tag {arg string="Pedal",letterType="Helvetica", letterSize=60, widthAdj = 1, heightAdj = 0.1;
-var tagBox,sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
-if(tagWindow.notNil, {tagWindow.close});
-sizeLetter = letterSize*resize;
-textWidth = string.charPix(sizeLetter);
-textHeight = sizeLetter*1.25;
-textArr = w.bounds.asArray;
-widthPos = (((textArr[2]-textWidth)/2)*widthAdj)+textArr[0];
-heightPos = (((textArr[3]-textHeight)/2)*heightAdj)+textArr[1];
-tagWindow = Window("Tag", Rect( widthPos, heightPos, textWidth, textHeight), border: false).front;
-tagWindow.view.background_( Color.white );
-tagBox = StaticText(tagWindow, Rect( 0, 0, textWidth, textHeight));
-tagBox.font_(Font(letterType, sizeLetter)).string_(string).align_(\centered);
-}
+	text {arg string="Hello", letterType="Helvetica", letterSize=90, widthAdj = 0, heightAdj = 0.1, color=Color.black;
+	var sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
+	sizeLetter = letterSize*resize;
+	textWidth = string.charPix(sizeLetter);
+	textHeight = sizeLetter*1.25;
+	textArr = w.bounds.asArray;
+	widthPos = (((textArr[2]-textWidth)/2)*widthAdj);
+	heightPos = (((textArr[3]-textHeight)/2)*heightAdj.linlin(0,2,2,0));
+	text.bounds_(Rect( widthPos, heightPos, textWidth, textHeight)).font_(Font(letterType, sizeLetter)).string_(string).stringColor_(color).align_(\centered);
+	}
 
-tagClose {
-tagWindow.close;
-}
+	text2 {arg string="Hello", letterType="Helvetica", letterSize=90, widthAdj = 0, heightAdj = 0.1, color=Color.black;
+	var sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
+	sizeLetter = letterSize*resize;
+	textWidth = string.charPix(sizeLetter);
+	textHeight = sizeLetter*1.25;
+	textArr = w.bounds.asArray;
+	widthPos = (((textArr[2]-textWidth)/2)*widthAdj);
+	heightPos = (((textArr[3]-textHeight)/2)*heightAdj.linlin(0,2,2,0));
+	text2.bounds_(Rect( widthPos, heightPos, textWidth, textHeight)).font_(Font(letterType, sizeLetter)).string_(string).stringColor_(color).align_(\centered);
+	}
 
-text {arg string="Hello", letterType="Helvetica", letterSize=90, widthAdj = 0, heightAdj = 0.1, color=Color.black;
-var sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
-sizeLetter = letterSize*resize;
-textWidth = string.charPix(sizeLetter);
-textHeight = sizeLetter*1.25;
-textArr = w.bounds.asArray;
-widthPos = (((textArr[2]-textWidth)/2)*widthAdj);
-heightPos = (((textArr[3]-textHeight)/2)*heightAdj.linlin(0,2,2,0));
-text.bounds_(Rect( widthPos, heightPos, textWidth, textHeight)).font_(Font(letterType, sizeLetter)).string_(string).stringColor_(color).align_(\centered);
-}
+	expression {arg string="F", letterType="Sonora", letterSize=120, pos = 1, heightAdj = 1.15, color=Color.black;
+	var sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
+	sizeLetter = letterSize*resize;
+	textWidth = string.charPix(sizeLetter);
+	textHeight = sizeLetter*1.25;
+	textArr = w.bounds.asArray;
+	widthPos = ((35*resize*(pos-1))+(75*resize));
+	heightPos = (((textArr[3]-textHeight)/2)*heightAdj.linlin(0,2,2,0));
+	express.bounds_(Rect( widthPos, heightPos, textWidth, textHeight)).font_(Font(letterType, sizeLetter)).string_(string).stringColor_(color).align_(\centered);
+	}
+	
+	textClose {
+	if(text.notNil,{
+	text.string_("");
+	});
+	}
 
-text2 {arg string="Hello", letterType="Helvetica", letterSize=90, widthAdj = 0, heightAdj = 0.1, color=Color.black;
-var sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
-sizeLetter = letterSize*resize;
-textWidth = string.charPix(sizeLetter);
-textHeight = sizeLetter*1.25;
-textArr = w.bounds.asArray;
-widthPos = (((textArr[2]-textWidth)/2)*widthAdj);
-heightPos = (((textArr[3]-textHeight)/2)*heightAdj.linlin(0,2,2,0));
-text2.bounds_(Rect( widthPos, heightPos, textWidth, textHeight)).font_(Font(letterType, sizeLetter)).string_(string).stringColor_(color).align_(\centered);
-}
+	text2Close {
+	if(text2.notNil,{
+	text2.string_("");
+	})
+	}
 
-expression {arg string="F", letterType="Sonora", letterSize=120, pos = 1, heightAdj = 1.15, color=Color.black;
-var sizeLetter,textWidth,textHeight, textArr,widthPos,heightPos;
-sizeLetter = letterSize*resize;
-textWidth = string.charPix(sizeLetter);
-textHeight = sizeLetter*1.25;
-textArr = w.bounds.asArray;
-widthPos = ((35*resize*(pos-1))+(75*resize));
-heightPos = (((textArr[3]-textHeight)/2)*heightAdj.linlin(0,2,2,0));
-express.bounds_(Rect( widthPos, heightPos, textWidth, textHeight)).font_(Font(letterType, sizeLetter)).string_(string).stringColor_(color).align_(\centered);
-}
+	expressionClose {
+	if(express.notNil,{
+	express.string_("");
+	});
+	}
 
-textClose {
-text.string_("");
-}
+	click1On {clickColor1.value;
+	}
 
-text2Close {
-text2.string_("");
-}
+	click1Off {white1.value;
+	}
 
-expressionClose {
-express.string_("");
-}
-
-click1On {clickColor1.value;
-}
-
-click1Off {white1.value;
-}
-
-click1Note {arg dur=1.0;
-Routine({1.do({
-this.click1On;
-dur.yield;
-this.click1Off;
-});
-}).play(clock)
-}	
-
-click1Close {
-	w2.close;
-	w2 = nil;
-}
-
-click1CloseTime {arg dur=1;
+	click1Note {arg dur=1.0;
 	Routine({1.do({
+	this.click1On;
 	dur.yield;
-	this.click1Close;
-	})}).play(clock);
-}
+	this.click1Off;
+	});
+	}).play(clock)
+	}	
+	
+	click1Close {
+		if(w2.notNil, {
+		w2.close;
+		w2 = nil;
+		});
+	}
+	
+	click1CloseTime {arg dur=1;
+		Routine({1.do({
+		dur.yield;
+		this.click1Close;
+		})}).play(clock);
+	}
 
-click2 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click2";
-if(w3.notNil, {w3.close});
- w3 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
-w3.view.background_( Color.white );
-white2 = { w3.drawFunc = {
-        Pen.color = Color.new255(238, 233, 233);
-        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
-         if(w3.notNil, {w3.refresh;});
-    }};
-clickColor2 = {arg alpha=1.0; w3.drawFunc = {
-        Pen.color = Color.new255(255, 99, 71).alpha_(alpha);
-        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
-       if(w3.notNil, { w3.refresh;});
-    }};   
-white2.value;  
-
-//w.front;
-w3.front;
-if(w2.notNil, {w2.front});
-}
-
-click2On {clickColor2.value;
-}
-
-click2Off {white2.value;
-}
-
-click2Note {arg dur=1.0;
-Routine({1.do({
-this.click2On;
-dur.yield;
-this.click2Off;
-});
-}).play(clock);
-}	
-
-click2Close {
-	w3.close;
-	w3 = nil;
-}
-
-//two more clicks
-click3 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click3";
-if(w4.notNil, {w4.close});
- w4 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
-w4.view.background_( Color.white );
-white3 = { w4.drawFunc = {
-        Pen.color = Color.new255(238, 233, 233);
-        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
-         if(w4.notNil, {w4.refresh;});
-    }};
-clickColor3 = {arg alpha=1.0; w4.drawFunc = {
-        Pen.color = Color.new255(80, 130, 30).alpha_(alpha);
-        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
-       if(w4.notNil, { w4.refresh;});
-    }};   
-white3.value;  
-
-//w.front;
-w4.front;
-//if(w2.notNil, {w2.front});
-}
-
-click3On {clickColor3.value;
-}
-
-click3Off {white3.value;
-}
-
-click3Note {arg dur=1.0;
-Routine({1.do({
-this.click3On;
-dur.yield;
-this.click3Off;
-});
-}).play(clock);
-}	
-
-click3Close {
-	w4.close;
-	w4 = nil;
-}
-
-//
-
-click4 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, scaleSize=1, name="click4";
-if(w5.notNil, {w5.close});
- w5 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+(resize*scaleSize)), w.bounds.asArray[1]+(winAdd*(resize*scaleSize)), (250*(resize*scaleSize))*winAdj, (250*(resize*scaleSize))*winAdj ), border: border).front;
-w5.view.background_( Color.white );
-white4 = { w5.drawFunc = {
-        Pen.color = Color.new255(238, 233, 233);
-        Pen.fillOval( Rect( (10*(resize*scaleSize))*winAdj, (10*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj ) );
-         if(w5.notNil, {w5.refresh;});
-    }};
-clickColor4 = {arg alpha=1.0; w5.drawFunc = {
-        Pen.color = Color.new255(0, 100, 140).alpha_(alpha);
-        Pen.fillOval( Rect( (10*(resize*scaleSize))*winAdj, (10*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj ) );
-       if(w5.notNil, { w5.refresh;});
-    }};   
-white4.value;  
-w5.front;
-}
-
-click4On {clickColor4.value;
-}
-
-click4Off {white4.value;
-}
-
-click4Note {arg dur=1.0;
-Routine({1.do({
-this.click4On;
-dur.yield;
-this.click4Off;
-});
-}).play(clock);
-}	
-
-click4Close {
-	w5.close;
-	w5 = nil;
-}
-
-//
-
-setsynth {arg amp = 0.1;
-	synth.set(\amp, amp);
-}
-
-setsynth2 {arg amp = 0.1;
-	synth2.set(\amp, amp);
-}    
+	click2 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click2";
+	if(w3.notNil, {w3.close});
+	 w3 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
+	w3.view.background_( Color.white );
+	white2 = {if(w3.notNil, {
+			w3.drawFunc = {
+	        Pen.color = Color.new255(238, 233, 233);
+	        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
+			};
+	         w3.refresh;
+	         });
+	         };
+	clickColor2 = {arg alpha=1.0; 
+		if(w3.notNil, {
+		w3.drawFunc = {
+	        Pen.color = Color.new255(255, 99, 71).alpha_(alpha);
+	        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
+	    };
+	     w3.refresh;});
+	     };   
+	white2.value;  
+	
+	//w.front;
+	w3.front;
+	if(w2.notNil, {w2.front});
+	}
+	
+	click2On {clickColor2.value;
+	}
+	
+	click2Off {white2.value;
+	}
+	
+	click2Note {arg dur=1.0;
+	Routine({1.do({
+	this.click2On;
+	dur.yield;
+	this.click2Off;
+	});
+	}).play(clock);
+	}	
+	
+	click2Close {
+		if(w3.notNil, {
+		w3.close;
+		w3 = nil;
+		});
+	}
+	
+	//two more clicks
+	click3 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click3";
+	if(w4.notNil, {w4.close});
+	 w4 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
+	w4.view.background_( Color.white );
+	white3 = {if(w4.notNil, {
+			w4.drawFunc = {
+	        Pen.color = Color.new255(238, 233, 233);
+	        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
+			};
+	         w4.refresh;
+	         });
+	         };
+	clickColor3 = {arg alpha=1.0; 
+		if(w4.notNil, {
+		w4.drawFunc = {
+	        Pen.color = Color.new255(80, 130, 30).alpha_(alpha);
+	        Pen.fillOval( Rect( (10*resize)*winAdj, (10*resize)*winAdj, (230*resize)*winAdj, (230*resize)*winAdj ) );
+	    };
+	     w4.refresh;});
+	     };   
+	white3.value;  
+	
+	//w.front;
+	w4.front;
+	//if(w2.notNil, {w2.front});
+	}
+	
+	click3On {clickColor3.value;
+	}
+	
+	click3Off {white3.value;
+	}
+	
+	click3Note {arg dur=1.0;
+	Routine({1.do({
+	this.click3On;
+	dur.yield;
+	this.click3Off;
+	});
+	}).play(clock);
+	}	
+	
+	click3Close {
+		if(w4.notNil, {
+		w4.close;
+		w4 = nil;
+		});
+	}
+	
+	//
+	
+	click4 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, scaleSize=1, name="click4";
+	if(w5.notNil, {w5.close});
+	 w5 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+(resize*scaleSize)), w.bounds.asArray[1]+(winAdd*(resize*scaleSize)), (250*(resize*scaleSize))*winAdj, (250*(resize*scaleSize))*winAdj ), border: border).front;
+	w5.view.background_( Color.white );
+	white4 = {if(w5.notNil, {
+			w5.drawFunc = {
+	        Pen.color = Color.new255(238, 233, 233);
+	        Pen.fillOval( Rect( (10*(resize*scaleSize))*winAdj, (10*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj));
+			};
+	         w5.refresh;
+	         });
+	         };
+	clickColor4 = {arg alpha=1.0; 
+		if(w5.notNil, {
+		w5.drawFunc = {
+	        Pen.color = Color.new255(0, 100, 140).alpha_(alpha);
+	        Pen.fillOval( Rect( (10*(resize*scaleSize))*winAdj, (10*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj, (230*(resize*scaleSize))*winAdj));
+	    };
+	     w5.refresh;});};   
+	white4.value;  
+	w5.front;
+	}
+	
+	click4On {clickColor4.value;
+	}
+	
+	click4Off {white4.value;
+	}
+	
+	click4Note {arg dur=1.0;
+	Routine({1.do({
+	this.click4On;
+	dur.yield;
+	this.click4Off;
+	});
+	}).play(clock);
+	}	
+	
+	click4Close {
+		if(w5.notNil, {
+		w5.close;
+		w5 = nil;
+		});
+	}
+	
+	//
+	
+	setsynth {arg amp = 0.1;
+		synth.set(\amp, amp);
+	}
+	
+	setsynth2 {arg amp = 0.1;
+		synth2.set(\amp, amp);
+	}    
 	
 	close {
 	case
