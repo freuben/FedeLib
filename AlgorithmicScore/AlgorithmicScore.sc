@@ -7,11 +7,11 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
 	init {arg firstResize=1.5, string="score";
 	resize = firstResize;
 	w = Window(string, Rect( 64, 860, 960*resize, 600*resize )).front;
-	this.firstFunc(w, firstResize);
+	this.firstFunc(w);
 	}	
 	
 	*screenBounds {arg string="score", firstResize=1.4266666666667;
-	^super.new.init2(string);
+	^super.new.init2(string, firstResize);
 	}
 	
 	init2 {arg string="score", firstResize=1.4266666666667;
@@ -20,6 +20,16 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
    	this.firstFunc(w);
 	}
 	
+	*screenSet {arg string="score", left=0, top=0, width=1366, height=768, firstResize=1.4266666666667;
+	^super.new.init3(string, left, top, width, height, firstResize);
+	}
+	
+	init3 {arg string, left, top, width, height, firstResize;
+	resize = firstResize;
+	w = Window(string, Rect( left, top, width, height )).front;
+   	this.firstFunc(w);
+	}
+
 	firstFunc {arg window;
 		trebleClef = 71.asAscii.asString;
 		bassClef = 63.asAscii.asString;
@@ -32,8 +42,9 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
    		noteAdjust = -11.7;
 	}
 	
-	playMovie {arg pathName, pix1=1101, pix2=674, above=nil;
-	if(movie.notNil, {movie.remove});
+	playMovie {arg pathName, rate=1, pix1=1101, pix2=674, above=nil;
+	if(movie.notNil, {this.removeMovie});
+	if(picture.notNil, {this.removeImage});
 	if((windowType == nil).or(windowType == 0), {this.clearWindow});
 	if(above == nil, {above = w.bounds.asArray[2]-pix2/18});
 	pathName = pathName ?? { "/DeskTop/test.mov" };
@@ -43,12 +54,21 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
 	.path_(pathName)
 	.background_( Color.white )
 	.start;
+	movie.rate_(rate);
+	}
+	
+	removeMovie {
+	{
+	movie.stop;
+	movie.remove;
+	movie = nil;	
+	}.defer;
 	}	
 	
 	image {arg pathName, scale, above=nil;
 	var pix1, pix2;
-	if(movie.notNil, {movie.remove});
-	if(picture.notNil, {picture.free; picture=nil});
+	if(movie.notNil, {this.removeMovie});
+	if(picture.notNil, {this.removeImage});
 	if((windowType == nil).or(windowType == 0), {this.clearWindow});
 	pathName = pathName ?? { "/DeskTop/test.mov" };
 	windowType = 1;
@@ -62,10 +82,15 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
 	w.refresh;
 	}
 	
+	removeImage {
+	picture.free; 
+	picture=nil;	
+	}
+	
 	imageCenter {arg pathName, scale;
 	var pix1,pix2;
-	if(movie.notNil, {movie.remove});
-	if(picture.notNil, {picture.free; picture=nil});
+	if(movie.notNil, {this.removeMovie});
+	if(picture.notNil, {this.removeImage});
 	if((windowType == nil).or(windowType == 0), {this.clearWindow});
 	picture = SCImage.new(pathName);
 	pix1 = picture.width*scale;
@@ -84,7 +109,7 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
 	step2 = 0;
 	
 	if( movie.notNil, {
-	movie.remove;
+	this.removeMovie;
 	});
 	clefArr = storeArrayClef;
 	if((staffArr.notNil).and(newStaffArr == 0), {
@@ -556,7 +581,7 @@ fontArr.do({|item, index|
 
 	click1 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click1";
 	if(w2.notNil, {w2.close});
-	 w2 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
+	 w2 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)*resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
 	w2.view.background_( Color.white );
 	white1 = { 
 		if(w2.notNil, {
@@ -598,7 +623,9 @@ fontArr.do({|item, index|
 	if(w3.notNil, {w3.front});
 	t = Routine({ (newTime/0.1).do({oldTime = oldTime - 0.1; numBox.value_(oldTime.round(0.1));  (0.1*clockAdj).yield; });
 	(0.1*clockAdj).yield;
+	if(timerWindow.notNil, {
 	timerWindow.close;
+	});
 	}).play(clock);
 	
 	}
@@ -706,7 +733,7 @@ fontArr.do({|item, index|
 
 	click2 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click2";
 	if(w3.notNil, {w3.close});
-	 w3 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
+	 w3 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)*resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
 	w3.view.background_( Color.white );
 	white2 = {if(w3.notNil, {
 			w3.drawFunc = {
@@ -756,7 +783,7 @@ fontArr.do({|item, index|
 	//two more clicks
 	click3 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, name="click3";
 	if(w4.notNil, {w4.close});
-	 w4 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
+	 w4 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)*resize), w.bounds.asArray[1]+(winAdd*resize), (250*resize)*winAdj, (250*resize)*winAdj ), border: border).front;
 	w4.view.background_( Color.white );
 	white3 = {if(w4.notNil, {
 			w4.drawFunc = {
@@ -807,7 +834,7 @@ fontArr.do({|item, index|
 	
 	click4 {arg winAdj = 0.8, winAdd = 20, leftWin=1, border=true, scaleSize=1, name="click4";
 	if(w5.notNil, {w5.close});
-	 w5 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)+(resize*scaleSize)), w.bounds.asArray[1]+(winAdd*(resize*scaleSize)), (250*(resize*scaleSize))*winAdj, (250*(resize*scaleSize))*winAdj ), border: border).front;
+	 w5 = Window(name, Rect( w.bounds.asArray[0]+((80*leftWin)*resize), w.bounds.asArray[1]+(winAdd*resize), (250*(resize*scaleSize))*winAdj, (250*(resize*scaleSize))*winAdj ), border: border).front;
 	w5.view.background_( Color.white );
 	white4 = {if(w5.notNil, {
 			w5.drawFunc = {
@@ -861,10 +888,27 @@ fontArr.do({|item, index|
 	}    
 	
 	close {
-	case
-	{w.notNil} {w.close}
-	{w2.notNil} {w2.close}
-	{w3.notNil} {w3.close};
+	if(w.notNil, {w.close});
+	if(w2.notNil, {w2.close});
+	if(w3.notNil, {w3.close});
+	if(w4.notNil, {w4.close});
+	if(w5.notNil, {w5.close});
+	}
+	
+	hide {
+	if(w.notNil, {w.visible = false});
+	if(w2.notNil, {w2.visible = false});
+	if(w3.notNil, {w3.visible = false});
+	if(w4.notNil, {w4.visible = false});
+	if(w5.notNil, {w5.visible = false});
+	}
+	
+	show {
+	if(w.notNil, {w.visible = true});
+	if(w2.notNil, {w2.visible = true});
+	if(w3.notNil, {w3.visible = true});
+	if(w4.notNil, {w4.visible = true});
+	if(w5.notNil, {w5.visible = true});
 	}
 
 }

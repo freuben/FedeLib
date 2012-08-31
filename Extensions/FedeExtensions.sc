@@ -1351,6 +1351,40 @@
 
 //extensions to wslib
 
+
++ SimpleMIDIFile {
+
+	arr { |inst, amp = 0.2| // amp: amp when velo == 127
+		var thisFile;
+		inst = ( inst ? 'default' ).asCollection;
+		
+		// todo: create multi-note events from chords, detect rests
+		
+		if( timeMode == 'seconds' )
+			{ thisFile = this }
+			{ thisFile = this.copy.timeMode_( 'seconds' ); };
+		 ^(
+			({ |tr|
+				var sustainEvents, deltaTimes;
+				sustainEvents = thisFile.noteSustainEvents( nil, tr );
+				if( sustainEvents.size > 0 )
+					{ 
+					sustainEvents = sustainEvents.flop;
+					deltaTimes = sustainEvents[1].differentiate;
+					[inst.wrapAt( tr + 1 ), 
+					deltaTimes ++ [0], 
+					[\rest] ++ sustainEvents[4],
+					[0] ++ ( sustainEvents[5] / 127 ) * amp,
+					[0] ++ sustainEvents[6];
+					] 
+					}
+					{ nil }
+				}!this.tracks).select({ |item| item.notNil })
+			);
+		}
+		
+}
+
 //+ SimpleMIDIFile {
 //
 //	trackSilence {arg track=1, thresh=0;
