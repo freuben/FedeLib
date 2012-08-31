@@ -462,16 +462,16 @@ SpearToMIDI : SpearToSC {
 		startTimeArray = startTimeArray.add(this.dataNote[count][count2].flop[0][count3]);
 		durArray =  durArray.add(duration);
 		count3 = count3 + 1; 
-		0.01.yield;
+		0.001.yield;
 		});
 		count2 = count2 + 1; 
-		0.02.yield;
+		//0.001.yield;
 		});
 		count = count + 1; 
 		count.postln;
-		0.02.yield;
+		//0.02.yield;
 		});
-		0.02.yield;
+		//0.02.yield;
 		'done'.postln;
 		}).play
 
@@ -551,7 +551,7 @@ func.do({|item, index| if(item.notNil, { extraArgs.put(funcIndex[index], func[in
 x = x.addAll([[this.startTimeArray[parStep]+timeOffSet, ["/s_new", synth, node, 0, 0, "freq", this.freqArray[parStep]*adjFreq, "amp", this.ampArray[parStep]*adjVol]++extraArgs]]);
 x = x.addAll([[this.startTimeArray[parStep]+this.durArray[parStep]+timeOffSet, ["/n_set", node, "gates", 0]]]);
 'partial '.post; (parStep+1).postln;
-0.001.yield;
+0.0001.yield;
 parStep = parStep + 1;
 });
 "done".postln;
