@@ -73,6 +73,7 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
 	pathName = pathName ?? { "/DeskTop/test.mov" };
 	windowType = 1;
 	picture = SCImage.new(pathName);
+	if(picture.notNil, {
 	pix1 = picture.width*scale;
 	pix2 = picture.height*scale;
 	if(above == nil, {above = w.bounds.asArray[2]-pix2/18});
@@ -80,6 +81,7 @@ AlgorithmicScore {var <>resize, <>resize2, <>func, <>w, <>w2, <>w3, <>w4, <>w5, 
 		picture.drawInRect(Rect((w.bounds.asArray[2]-pix1/2), above, pix1, pix2),picture.bounds,1,1); 
 	});
 	w.refresh;
+	});
 	}
 	
 	removeImage {
