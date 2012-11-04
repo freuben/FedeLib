@@ -43,7 +43,23 @@
 	});
 	^d;
 	}
-
+	
+	midiRatioRange {arg lowLimit, highLimit;
+	var result;
+	if((this > highLimit).or(this < lowLimit), {
+	case
+	{this > highLimit} {
+	result = ((highLimit.ratiomidi - 12) + this.ratiomidi.octint[1]).midiratio;
+	}
+	{this < lowLimit} {
+	result = ((lowLimit.ratiomidi) + this.ratiomidi.octint[1]).midiratio;
+	};
+	}, {
+		result = this;
+	});	
+	^result;
+	}
+	
 	midiRange {arg lowLimit, highLimit;
 	var newNote, result;
 	if((this >= lowLimit).and(this <= highLimit), {
@@ -1390,8 +1406,8 @@
 
 
 + SimpleMIDIFile {
-
-	arr { |inst, amp = 0.2| // amp: amp when velo == 127
+	//array items: instrument, duration, midinote, amplitude, sustain
+	arr { |inst, amp = 1.0| // amp: amp when velo == 127
 		var thisFile;
 		inst = ( inst ? 'default' ).asCollection;
 		
@@ -1419,6 +1435,34 @@
 				}!this.tracks).select({ |item| item.notNil })
 			);
 		}
+		
+		arrInfo {  // amp: amp when velo == 127
+		var thisFile;
+				
+		// todo: create multi-note events from chords, detect rests
+		
+		if( timeMode == 'seconds' )
+			{ thisFile = this }
+			{ thisFile = this.copy.timeMode_( 'seconds' ); };
+		 ^(
+			({ |tr|
+				var sustainEvents, deltaTimes;
+				sustainEvents = thisFile.noteSustainEvents( nil, tr );
+				if( sustainEvents.size > 0 )
+					{ 
+					sustainEvents = sustainEvents.flop;
+					deltaTimes = sustainEvents[1].differentiate;
+					[deltaTimes ++ [0], 
+					[\rest] ++ sustainEvents[4],
+					[0] ++ ( sustainEvents[5] ) ,
+					[0] ++ sustainEvents[6];
+					] 
+					}
+					{ [] }
+				}!this.tracks).select({ |item| item.notNil })
+			);
+		}
+
 		
 }
 
